@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sid's British Vocabulary Dictionary</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f1c2e; --gold: #c9a84c; --cream: #f5f0e6; --ink: #1a1208;
+  --red: #8b1a2a; --green: #1a4d2e; --amber: #7a3e00; --slate: #2e4a6b;
+  --cunk: #4a0a6e;
+  --paper: #faf6ee; --border: #d4b87a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'EB Garamond', Georgia, serif; background: var(--navy); min-height: 100vh; }
+
+/* HEADER */
+.masthead {
+  background: linear-gradient(160deg, #0a1520 0%, #1a3a5c 60%, #0f2438 100%);
+  padding: 30px 16px 22px; text-align: center;
+  border-bottom: 2px solid var(--gold);
+  position: relative; overflow: hidden;
+}
+.masthead::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 80px);
+}
+.crown-sym { font-size: 2.2rem; display: block; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(201,168,76,0.5)); }
+.masthead h1 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: clamp(1.4rem,5vw,2.2rem); letter-spacing:.06em; }
+.masthead .sub { color: #8a9db5; font-size:.8em; margin-top:6px; font-style:italic; line-height:1.8; }
+.masthead .rule { color: var(--gold); letter-spacing:.4em; font-size:.7rem; margin-top:8px; }
+
+/* AUDIO NOTE */
+.audio-note {
+  background: #1a2d1a; color: #7abf7a; padding: 10px 16px;
+  font-size:.78em; text-align:center; border-bottom:1px solid #2a4a2a;
+  line-height:1.6;
+}
+.audio-note b { color:#a0df80; }
+
+/* SOURCES */
+.sources { display:flex; flex-wrap:wrap; gap:7px; padding:10px 14px; background:#fff; border-bottom:1px solid #ddd; justify-content:center; }
+.stag { font-size:.7em; padding:3px 9px; border-radius:10px; font-weight:bold; }
+.s-savile { background:#e3f0fb; color:#1a3a5c; }
+.s-crown  { background:#fde8f0; color:#a0204e; }
+.s-wll    { background:#e8f5e9; color:#1b6b2f; }
+.s-pb     { background:#fef3e2; color:#7a3e00; }
+.s-bf     { background:#f0e8fe; color:#5a1a8e; }
+.s-bc     { background:#fff0e0; color:#8b4500; }
+
+/* CONTROLS */
+.controls {
+  background: var(--paper); padding:10px 14px;
+  border-bottom:2px solid var(--border);
+  position:sticky; top:0; z-index:50;
+  display:flex; flex-direction:column; gap:8px;
+}
+.search-row { display:flex; gap:8px; align-items:center; }
+.search-wrap { position:relative; flex:1; }
+.search-wrap input {
+  width:100%; padding:8px 12px 8px 34px;
+  border:1.5px solid var(--border); border-radius:3px;
+  font-family:'EB Garamond',serif; font-size:.95rem;
+  background:white; color:var(--ink); outline:none;
+}
+.search-wrap input:focus { border-color:var(--gold); }
+.search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--gold); font-size:.9rem; }
+.count-pill { background:var(--navy); color:var(--gold); padding:4px 10px; border-radius:10px; font-size:.72em; white-space:nowrap; }
+.filter-row { display:flex; flex-wrap:wrap; gap:5px; }
+.ftab {
+  padding:4px 10px; border:1.5px solid var(--border); border-radius:2px;
+  font-family:'EB Garamond',serif; font-size:.78rem; cursor:pointer;
+  background:white; color:var(--ink); transition:all .15s;
+}
+.ftab:hover, .ftab.on { background:var(--navy); border-color:var(--navy); color:var(--gold); }
+.alpha-bar {
+  display:flex; flex-wrap:wrap; gap:4px;
+  padding:8px 14px; background:#fff; border-bottom:1px solid #ddd;
+  position:sticky; top:92px; z-index:40;
+}
+.alpha-bar a {
+  text-decoration:none; background:var(--navy); color:var(--gold);
+  width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+  border-radius:3px; font-size:.72em; font-weight:bold;
+}
+.alpha-bar a:hover { background:var(--red); }
+
+/* MAIN */
+.main { background:var(--paper); padding:0 10px 40px; }
+.letter-heading {
+  font-family:'Playfair Display',serif;
+  font-size:2em; color:var(--navy);
+  border-bottom:3px solid var(--navy);
+  padding-bottom:3px; margin:18px 0 10px;
+  font-weight:700; display:flex; align-items:center; gap:10px;
+}
+.letter-heading small { font-family:'EB Garamond',serif; font-size:.38em; color:#888; font-weight:400; font-style:italic; }
+
+/* CARD */
+.card {
+  background:white; border-radius:8px; padding:13px 14px; margin-bottom:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.06); border-left:4px solid var(--slate);
+  transition: box-shadow .2s;
+}
+.card:hover { box-shadow:0 4px 14px rgba(0,0,0,.12); }
+.card.crown { border-left-color:var(--red); }
+.card.wll   { border-left-color:var(--green); }
+.card.pb    { border-left-color:var(--amber); }
+.card.bf    { border-left-color:#6a1a9e; }
+.card.bc    { border-left-color:#d4600a; }
+.card.ce    { border-left-color:#4a0a6e; }
+
+.card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px; gap:8px; }
+.word-block { flex:1; }
+.word { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; color:var(--navy); }
+.card.crown .word { color:var(--red); }
+.card.wll .word   { color:var(--green); }
+.card.pb .word    { color:var(--amber); }
+.card.bf .word    { color:#6a1a9e; }
+.card.bc .word    { color:#d4600a; }
+.card.ce .word    { color:#4a0a6e; }
+.s-ce { background:#f3e0ff; color:#4a0a6e; }
+.pos { font-size:.7em; color:#666; font-style:italic; margin-left:6px; }
+
+/* AUDIO BUTTON */
+.speak-btn {
+  background: var(--navy); color: var(--gold);
+  border: none; border-radius: 20px;
+  padding: 6px 12px; font-size: .75em;
+  cursor: pointer; display:flex; align-items:center; gap:4px;
+  white-space:nowrap; flex-shrink:0;
+  font-family:'EB Garamond',serif;
+  transition: all .15s;
+}
+.speak-btn:hover { background:var(--red); }
+.speak-btn.playing { background:#1a6a1a; animation: pulse .5s infinite alternate; }
+@keyframes pulse { from{opacity:.8} to{opacity:1} }
+
+/* PRON */
+.pron-row {
+  background:#e8f0f8; border-radius:4px; padding:5px 9px;
+  margin-bottom:6px; display:flex; align-items:center; gap:6px;
+}
+.pron-label { font-size:.62em; font-weight:bold; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; flex-shrink:0; }
+.pron-text { font-family:'Courier New',monospace; font-size:.85em; color:var(--navy); letter-spacing:.04em; }
+.pron-text b { color:var(--red); }
+
+.row { display:flex; gap:6px; margin-bottom:5px; align-items:flex-start; }
+.label { font-size:.63em; font-weight:bold; text-transform:uppercase; padding:2px 5px; border-radius:3px; white-space:nowrap; margin-top:2px; flex-shrink:0; }
+.lm { background:#fde8e8; color:#c0392b; }
+.lo { background:#e8f5e9; color:#1a7a30; }
+.le { background:#f3e5f5; color:#7a1aad; }
+.row-text { font-size:.88em; line-height:1.5; color:#333; }
+.row-text.it { font-style:italic; color:#555; }
+.src { font-size:.65em; color:#999; margin-top:7px; text-align:right; }
+
+.hidden { display:none !important; }
+
+/* FOOTER */
+footer {
+  background:var(--navy); color:#4a6a8a; text-align:center;
+  padding:20px 16px 30px; font-size:.75em; line-height:2;
+  border-top:1px solid #1a3050;
+}
+footer b { color:var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <span class="crown-sym">♔</span>
+  <h1>Sid's British Vocabulary Dictionary</h1>
+  <div class="sub">
+    🎬 Jimmy Savile · 👑 The Crown · 💌 Wicked Little Letters · 🎩 Peaky Blinders<br>
+    📺 Cunk on Earth · 🎓 British Formal English · 🗣️ British Casual & Slang
+  </div>
+  <div class="rule">✦ &nbsp; ✦ &nbsp; ✦</div>
+</div>
+
+<div class="audio-note">
+  🔊 <b>Audio:</b> Tap <b>▶ Hear it</b> on any card — word plays in British English automatically.<br>
+  <span style="opacity:.8">⚠️ <b>Save the file and open it in Chrome or Edge browser</b> for best audio. Volume must be on.</span>
+</div>
+
+<div class="sources">
+  <span class="stag s-savile">🎬 Jimmy Savile</span>
+  <span class="stag s-crown">👑 The Crown</span>
+  <span class="stag s-wll">💌 Wicked Little Letters</span>
+  <span class="stag s-pb">🎩 Peaky Blinders</span>
+  <span class="stag s-ce">📺 Cunk on Earth</span>
+  <span class="stag s-bf">🎓 British Formal</span>
+  <span class="stag s-bc">🗣️ British Casual/Slang</span>
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search words…" oninput="filterAll()">
+    </div>
+    <div class="count-pill" id="countPill">Loading…</div>
+  </div>
+  <div class="filter-row" id="filterRow">
+    <button class="ftab on" data-src="all" onclick="setFilter('all',this)">All</button>
+    <button class="ftab" data-src="savile" onclick="setFilter('savile',this)">🎬 Jimmy Savile</button>
+    <button class="ftab" data-src="crown" onclick="setFilter('crown',this)">👑 The Crown</button>
+    <button class="ftab" data-src="wll" onclick="setFilter('wll',this)">💌 Wicked Little Letters</button>
+    <button class="ftab" data-src="pb" onclick="setFilter('pb',this)">🎩 Peaky Blinders</button>
+    <button class="ftab" data-src="bf" onclick="setFilter('bf',this)">🎓 Formal</button>
+    <button class="ftab" data-src="bc" onclick="setFilter('bc',this)">🗣️ Casual/Slang</button>
+    <button class="ftab" data-src="ce" onclick="setFilter('ce',this)">📺 Cunk on Earth</button>
+  </div>
+</div>
+
+<div class="alpha-bar" id="alphaBar"></div>
+<div class="main" id="mainContent"></div>
+
+<footer>
+  <b>🎬 Jimmy Savile: A British Horror Story</b> — Netflix, 2022<br>
+  <b>👑 The Crown</b> — Netflix, 2016–2023<br>
+  <b>💌 Wicked Little Letters</b> — StudioCanal, 2024<br>
+  <b>🎩 Peaky Blinders</b> — BBC, 2013–2022<br>
+  <b>🎓 British Formal English</b> · <b>🗣️ British Casual &amp; Slang</b> · <b>📺 Cunk on Earth</b><br><br>
+  <b>225+ entries · A to Z · Audio British Pronunciation</b>
+</footer>
+
+<script>
+// ── SOURCE CONFIG ─────────────────────────────────────────────
+const SRC = {
+  savile: { label:'🎬 Jimmy Savile', cls:'savile' },
+  crown:  { label:'👑 The Crown',    cls:'crown'  },
+  wll:    { label:'💌 Wicked Little Letters', cls:'wll' },
+  pb:     { label:'🎩 Peaky Blinders', cls:'pb'  },
+  bf:     { label:'🎓 British Formal', cls:'bf'  },
+  bc:     { label:'🗣️ British Casual/Slang', cls:'bc' }
+};
+
+// ── VOCABULARY DATA ───────────────────────────────────────────
+const VOCAB = [
+// ═══ A ═══
+{w:'Ace', pos:'adjective / exclamation', pron:'<b>AYS</b> (rhymes with "face")', meaning:'Excellent; brilliant. Used to describe something or someone outstanding.', origin:'British casual slang — from playing cards, where the ace is the highest card.', ex:'"That was ace, mate!" — heard all over Britain.',src:'bc'},
+{w:'Acquiesce', pos:'verb', pron:'ak-wee-<b>ES</b>', meaning:'To accept something reluctantly but without protest; to go along with something without agreeing openly.', origin:'From Latin acquiescere — to rest in or be at peace with.', ex:'"The committee had no choice but to acquiesce to the minister\'s demands."',src:'bf'},
+{w:'Acquitted', pos:'verb (past tense)', pron:'uh-<b>KWIT</b>-id', meaning:'Formally declared not guilty of a criminal charge in a court of law; cleared of all charges.', origin:'From Old French acquiter — to pay off a debt or discharge.', ex:'"Rose Gooding was acquitted only after the women of Littlehampton uncovered the truth."',src:'wll'},
+{w:'Admonish', pos:'verb', pron:'ad-<b>MON</b>-ish', meaning:'To warn or reprimand someone firmly but not harshly; to strongly advise against something.', origin:'From Old French amonester, from Latin admonere — to remind or warn.', ex:'"The judge admonished the jury not to speak to the press."',src:'bf'},
+{w:'Aggro', pos:'noun (slang)', pron:'<b>AG</b>-roh', meaning:'Aggressive behaviour or trouble; unnecessary problems. Short for "aggravation" or "aggression." "Looking for aggro" = wanting a fight.', origin:'British street slang, 1960s–70s. Short for aggravation. Very common in British crime dramas.', ex:'"Don\'t cause any aggro down the market, yeah?"',src:'bc'},
+{w:'Albeit', pos:'conjunction', pron:'awl-<b>BEE</b>-it', meaning:'Even though; although. Used to introduce a concession — admitting something while maintaining the main point.', origin:'Middle English al be it — "although it be." A classic formal British conjunction.', ex:'"It was a fine performance, albeit one marred by the poor acoustics."',src:'bf'},
+{w:'Amicable', pos:'adjective', pron:'<b>AM</b>-ih-kuh-bul', meaning:'Friendly and peaceful; done in a polite and cooperative way without conflict or hostility.', origin:'From Latin amicabilis — friendly, from amicus (friend).', ex:'"The two sides reached an amicable agreement without going to court."',src:'crown'},
+{w:'Anguish', pos:'noun', pron:'<b>ANG</b>-gwish', meaning:'Severe mental or physical pain and suffering; deep distress or torment.', origin:'From Old French angoisse, from Latin angustia — narrowness, tightness.', ex:'"The anguish on her face was plain for everyone to see."',src:'crown'},
+{w:'Annus Horribilis', pos:'Latin phrase', pron:'<b>AN</b>-us  ho-<b>RIB</b>-ih-lis', meaning:'A terrible or disastrous year. Famous because Queen Elizabeth II used this phrase in her 1992 speech to describe that year of royal scandals.', origin:'Latin. Annus = year; horribilis = horrible. Modelled on Annus Mirabilis (wonderful year).', ex:'"1992 was, as she herself described it, her annus horribilis."',src:'crown'},
+{w:'Antics', pos:'noun (plural)', pron:'<b>AN</b>-tiks', meaning:'Silly, amusing, or attention-grabbing behaviour; wild or eccentric actions.', origin:'From Italian antico (ancient). Used to describe outrageous or clownish behaviour.', ex:'"The presenter\'s antics on television made him famous across the country."',src:'savile'},
+{w:'Aplomb', pos:'noun', pron:'uh-<b>PLOM</b> (the B is silent)', meaning:'Self-confidence and composure, especially in a difficult situation. "With aplomb" = handling something smoothly and without fuss.', origin:'From French aplomb — perpendicularity, self-assurance. Literally "according to the plumb line" — perfectly straight.', ex:'"Colman handled the comedic and dramatic elements with aplomb."',src:'bf'},
+{w:'Applause', pos:'noun', pron:'uh-<b>PLAWZ</b>', meaning:'The sound of people clapping their hands to show approval or appreciation.', origin:'From Latin applaudere — to clap at.', ex:'"The studio audience burst into applause when he walked on stage."',src:'savile'},
+{w:'Armoury', pos:'noun', pron:'<b>AR</b>-muh-ree', meaning:'A place where weapons are stored and maintained; a collection of weapons. The BSA factory on Armoury Road, Birmingham, is referenced directly in the show.', origin:'From Old French armëure.', ex:'"This is the Peaky Blinders\' armoury — two dozen machine guns." — Tommy Shelby',src:'pb'},
+{w:'Arson', pos:'noun', pron:'<b>AR</b>-sun', meaning:'The criminal act of deliberately setting fire to property.', origin:'From Old French arsion, from Latin ardere — to burn. A legal term in British criminal law.', ex:'"The police investigated the blaze as suspected arson."',src:'savile'},
+{w:'Ascertain', pos:'verb', pron:'as-er-<b>TAYN</b>', meaning:'To find out something for certain; to discover with confidence through investigation.', origin:'From Old French acertener — to make certain.', ex:'"The detective needed to ascertain exactly where he had been that evening."',src:'bf'},
+{w:'Audacity', pos:'noun', pron:'aw-<b>DAS</b>-ih-tee', meaning:'Willingness to take shockingly bold risks; extreme daring, often combined with shamelessness.', origin:'From Latin audacitas — boldness, from audax (bold).', ex:'"The audacity of Tommy\'s moves left even his enemies too stunned to respond."',src:'pb'},
+// ═══ B ═══
+{w:'Bab', pos:'noun (Brummie dialect)', pron:'<b>BAB</b> (short "a" as in "cat")', meaning:'A term of endearment used in Birmingham — equivalent to "love" or "dear." Used affectionately between friends and family.', origin:'From Brummie dialect, derived from "baby."', ex:'"Alright, bab?" — a typical Shelby family greeting on the streets of Small Heath.',src:'pb'},
+{w:'Backhander', pos:'noun', pron:'<b>BAK</b>-han-der', meaning:'A bribe; a secret payment made to gain favours or buy silence from officials or police.', origin:'British English slang — money passed "back-handed" to avoid being seen.', ex:'"A backhander to the right constable opened any door in Birmingham."',src:'pb'},
+{w:'Banter', pos:'noun / verb', pron:'<b>BAN</b>-ter', meaning:'Playful and friendly teasing or joking. In British culture, good banter is a social art form — it shows comfort and friendship. "He can\'t take the banter" = he can\'t take a joke.', origin:'Origin uncertain — possibly from French bantir (to jest). Became a defining British social concept.', ex:'"We were just having a bit of banter — no harm meant."',src:'bc'},
+{w:'Bedraggled', pos:'adjective', pron:'bih-<b>DRAG</b>-uld', meaning:'Wet, dirty, and untidy in appearance; looking messy and worn out.', origin:'From be- + draggle (to make wet by dragging).', ex:'"She arrived looking utterly bedraggled after the storm."',src:'savile'},
+{w:'Besiege', pos:'verb', pron:'bih-<b>SEEJ</b>', meaning:'To surround and overwhelm someone with requests or questions; to surround a place with armed forces.', origin:'From Old French asegier.', ex:'"Journalists besieged the building demanding a statement."',src:'savile'},
+{w:'Bespoke', pos:'adjective', pron:'bih-<b>SPOHK</b>', meaning:'Custom-made; specifically tailored for a particular person. In Britain, bespoke originally referred to handmade suits from Savile Row, London — the most prestigious custom tailoring street in the world.', origin:'From be- + spoke (past tense of speak) — "spoken for" specifically. A very British formal term.', ex:'"The Peaky Blinders wore bespoke suits, distinguishing themselves from common gangsters."',src:'bf'},
+{w:'Bilge', pos:'noun / interjection', pron:'<b>BILJ</b> (rhymes with "fridge")', meaning:'Nonsense; rubbish. Used in British English to dismiss something as complete nonsense — "what utter bilge!"', origin:'From Middle Dutch bulge — rounded bottom of a ship. The bilge contains dirty waste water.', ex:'"The defence lawyer called the accusations complete bilge."',src:'savile'},
+{w:'Bizarre', pos:'adjective', pron:'bih-<b>ZAR</b>', meaning:'Very strange or unusual; hard to understand or explain.', origin:'From French bizarre, possibly from Basque bizar — a beard.', ex:'"The whole affair was utterly bizarre from start to finish."',src:'savile'},
+{w:'Blimey', pos:'exclamation', pron:'<b>BLY</b>-mee', meaning:'An exclamation of surprise, shock, or amazement. One of the most quintessentially British exclamations. Can express anything from mild to extreme surprise.', origin:'A euphemistic alteration of "Blind me!" — an old oath. Been in use since the 19th century.', ex:'"Blimey, did you see the size of that crowd?" — said on the streets of Birmingham.',src:'bc'},
+{w:'Blinder', pos:'noun / adjective (Brummie slang)', pron:'<b>BLY</b>-nder', meaning:'Birmingham slang for something or someone of striking, impressive appearance. "That\'s a blinder!" = brilliant. Also refers to the peaked cap worn by the gang.', origin:'Old Midlands dialect. Historian Carl Chinn says it described someone of sharp, stylish appearance.', ex:'"Playing a blinder, eh, Tommy?"',src:'pb'},
+{w:'Bloke', pos:'noun', pron:'<b>BLOHK</b> (rhymes with "smoke")', meaning:'A man; a fellow. "Some bloke" = some man. "A decent bloke" = a good man. Completely neutral and everyday — every British man is a bloke.', origin:'From Shelta (Irish Traveller language) — bloke meaning man. Entered mainstream British slang in the 19th century.', ex:'"He\'s a good bloke — always helps you out when you need it."',src:'bc'},
+{w:'Bog-standard', pos:'adjective', pron:'<b>BOG</b>-stan-derd', meaning:'Completely ordinary; nothing special; the most basic version of something with no extras.', origin:'British slang — "bog" from British dialectal for "outhouse" suggesting basic necessity. Dating from the 1980s.', ex:'"It was a bog-standard terraced house — nothing fancy, nothing wrong with it."',src:'bc'},
+{w:'Boisterous', pos:'adjective', pron:'<b>BOY</b>-stuh-rus', meaning:'Noisy, energetic, and cheerfully rough; exuberantly lively and difficult to contain.', origin:'From Middle English boistous — rough, violent.', ex:'"Rose Gooding was rowdy and boisterous — the very opposite of her prim neighbour Edith."',src:'wll'},
+{w:'Bostin\'', pos:'adjective (Brummie dialect)', pron:'<b>BOS</b>-tin (drop the G entirely)', meaning:'Excellent, wonderful, first-rate. "Proper bostin\'" = absolutely brilliant. One of the most recognisable Brummie words.', origin:'Black Country / Birmingham dialect — possibly from "bursting" with goodness.', ex:'"That Garrison whisky? Proper bostin\', that is."',src:'pb'},
+{w:'Brazen', pos:'adjective', pron:'<b>BRAY</b>-zun', meaning:'Bold and shameless; acting defiantly without any guilt or embarrassment.', origin:'From Old English bræsen — made of brass. Brass is hard and unyielding.', ex:'"The brazen audacity of the Peaky Blinders — walking into rival territory as if they owned it."',src:'pb'},
+{w:'Brilliant', pos:'adjective / exclamation', pron:'<b>BRIL</b>-yunt', meaning:'In British English, "brilliant" is used far more casually than in American English. It means excellent, wonderful, or great — and can be used as a standalone exclamation. "Oh, brilliant!" = "Oh, great!"', origin:'From French brillant — shining. In British English it evolved into an everyday superlative of enthusiasm.', ex:'"Brilliant! That\'s exactly what I needed." — everyday British response.',src:'bc'},
+// ═══ C ═══
+{w:'Candid', pos:'adjective', pron:'<b>KAN</b>-did', meaning:'Truthful and straightforward; frank in expression, even if uncomfortable. Not the same as "rude" — candid means honest, not tactless.', origin:'From Latin candidus — white, pure, frank.', ex:'"To be candid with you, I don\'t think the plan will work."',src:'bf'},
+{w:'Ceased', pos:'verb (past tense)', pron:'<b>SEEST</b> (rhymes with "beast")', meaning:'Came to an end; stopped completely.', origin:'From Old French cesser, from Latin cessare — to stop.', ex:'"All communication with the outside world had ceased."',src:'savile'},
+{w:'Cheeky', pos:'adjective', pron:'<b>CHEE</b>-kee', meaning:'Slightly disrespectful but in an amusing or endearing way; impudent with a smile. "A cheeky grin" = a mischievous smile. Used affectionately, not as a serious insult.', origin:'From cheek — meaning impudence. The British love a bit of cheekiness.', ex:'"She gave him a cheeky wink as she walked out of the meeting."',src:'bc'},
+{w:'Cheers', pos:'exclamation', pron:'<b>CHEERZ</b>', meaning:'In British English, "cheers" means: (1) Thank you, (2) Goodbye, (3) a toast when drinking. The most versatile single word in British casual speech. You can say "cheers" for almost anything.', origin:'From Old French chiere — face, expression. Originally "be of good cheer." The toast meaning arrived in the 20th century.', ex:'"Cheers, mate — I really appreciate it." (meaning: thank you)',src:'bc'},
+{w:'Chuffed', pos:'adjective', pron:'<b>CHUFT</b>', meaning:'Very pleased; proud and happy. "Chuffed to bits" = absolutely delighted. One of the most warmly British expressions of happiness.', origin:'From British dialectal chuff — pleased, puffed up with pride. Dating from the 19th century.', ex:'"I\'m well chuffed — I passed my driving test first time!"',src:'bc'},
+{w:'Circumspect', pos:'adjective', pron:'<b>SER</b>-kum-spekt', meaning:'Wary and unwilling to take risks; thinking very carefully before acting or speaking.', origin:'From Latin circumspectus — looking around, from circum (around) + specere (to look).', ex:'"In dealing with the press, the Palace was always circumspect about what it revealed."',src:'bf'},
+{w:'Commuted', pos:'verb (past tense)', pron:'kuh-<b>MYOO</b>-tid', meaning:'A sentence has been commuted when a harsh punishment is reduced to a lesser one — out of mercy or as part of a deal.', origin:'From Latin commutare — to change entirely. A formal British legal term.', ex:'"Out of the kindness of my heart, your sentence has been commuted." — Arthur Shelby',src:'pb'},
+{w:'Comrade', pos:'noun', pron:'<b>KOM</b>-rad  (British drops the final "e" sound — NOT "kom-RAID")', meaning:'A close companion who shares the same struggle or cause. Used between soldiers who fought together, carrying deep loyalty forged through shared hardship. Also used in socialist and communist movements.', origin:'From French camarade, from Spanish camarada — people sharing the same room (cámara = chamber).', ex:'"These men are my comrades — we survived France together." — Tommy Shelby',src:'pb'},
+{w:'Concede', pos:'verb', pron:'kun-<b>SEED</b>', meaning:'To admit something is true or valid, often reluctantly; to yield or give up a point or claim. Politicians concede elections; debaters concede arguments.', origin:'From Latin concedere — to yield or grant.', ex:'"The minister was finally forced to concede that the policy had been a mistake."',src:'bf'},
+{w:'Concussed', pos:'adjective', pron:'kun-<b>KUST</b>', meaning:'Having suffered a concussion — a temporary brain injury from a blow to the head.', origin:'From Latin concussus — shaken violently.', ex:'"The player was taken off the field after appearing concussed."',src:'savile'},
+{w:'Conspiracy', pos:'noun', pron:'kun-<b>SPIR</b>-uh-see', meaning:'A secret plan by a group of people to do something harmful or illegal; a plot hatched in secrecy.', origin:'From Latin conspirare — to breathe together; to plot in unison.', ex:'"The conspiracy against Tommy ran deeper than he imagined — even his own family was involved."',src:'pb'},
+{w:'Constituency', pos:'noun', pron:'kun-<b>STICH</b>-yoo-un-see', meaning:'A group of voters in a specific area who elect a representative to Parliament; also a broader group of supporters or stakeholders.', origin:'From Latin constituere — to establish. A key term in British parliamentary democracy.', ex:'"The Prime Minister had to answer to her constituency as well as the Cabinet."',src:'crown'},
+{w:'Constrained', pos:'adjective / verb', pron:'kun-<b>STRAYND</b>', meaning:'Restricted or limited; forced to behave in a certain way; feeling uncomfortable or unnatural.', origin:'From Latin constringere — to bind tightly.', ex:'"Staff felt constrained from speaking out about what they had witnessed."',src:'savile'},
+{w:'Corroborate', pos:'verb', pron:'kuh-<b>ROB</b>-uh-rayt', meaning:'To confirm or give support to a statement, theory, or finding; to verify evidence with additional proof.', origin:'From Latin corroborare — to strengthen.', ex:'"Three independent witnesses came forward to corroborate her account."',src:'bf'},
+{w:'Cracking', pos:'adjective / exclamation', pron:'<b>KRAK</b>-ing', meaning:'Excellent; very good; first-rate. "A cracking result" = a brilliant result. "A cracking good read" = a brilliant book.', origin:'British slang — from "crack" meaning excellent quality. A northern England favourite.', ex:'"That was a cracking performance — absolutely first-rate."',src:'bc'},
+{w:'Crass', pos:'adjective', pron:'<b>KRASS</b> (rhymes with British "grass")', meaning:'Showing no intelligence or sensitivity; stupidly coarse and offensive; lacking any refinement.', origin:'From Latin crassus — thick, dense.', ex:'"The letters were filled with crass, degrading language that shocked the entire town."',src:'wll'},
+{w:'Crikey', pos:'exclamation', pron:'<b>KRY</b>-kee', meaning:'An exclamation of shock, surprise, or astonishment. A mild, very British alternative to stronger oaths. Often used humorously or sarcastically today.', origin:'A euphemistic form of "Christ!" — popular from the 19th century. Classic British expression.', ex:'"Crikey — did he just say that in front of the Queen?"',src:'bc'},
+{w:'Crucifix', pos:'noun', pron:'<b>KROO</b>-sih-fiks', meaning:'A cross with a figure of Jesus Christ on it; a Christian religious symbol.', origin:'From Latin crucifixus — fixed to a cross.', ex:'"He always wore a large gold crucifix around his neck."',src:'savile'},
+{w:'Culprit', pos:'noun', pron:'<b>KUL</b>-prit', meaning:'The person responsible for a crime or wrongdoing; the one actually guilty of an offence.', origin:'From Old French culpable (guilty) + prest (ready to prove it).', ex:'"The real culprit had been hiding in plain sight all along — living right next door."',src:'wll'},
+// ═══ D ═══
+{w:'Daft', pos:'adjective', pron:'<b>DAFT</b> (rhymes with "draft")', meaning:'Silly, stupid, or mildly foolish — but in a gentle, non-aggressive way. "Daft as a brush" = completely silly. Used affectionately as much as critically.', origin:'From Old English gedæfte — mild or meek. Evolved to mean foolish in Northern British dialects.', ex:'"Don\'t be daft, love — of course it\'ll be fine."',src:'bc'},
+{w:'Dapper', pos:'adjective', pron:'<b>DAP</b>-er', meaning:'Neat and trim in dress and appearance; stylish and well-turned-out. The Peaky Blinders were defined by their dapper style — flat caps, waistcoats, overcoats, and silk scarves.', origin:'From Middle Dutch dapper — brave, strong. In English it evolved to mean neat and stylish.', ex:'"The Peaky Blinders were known for being as dapper as they were dangerous."',src:'pb'},
+{w:'Decapitated', pos:'adjective / verb', pron:'dih-<b>KAP</b>-ih-tay-tid', meaning:'Having had the head cut off; beheaded.', origin:'From Latin decapitare — de (off) + caput (head).', ex:'"The statue had been decapitated by vandals."',src:'savile'},
+{w:'Decorum', pos:'noun', pron:'dih-<b>KOR</b>-um', meaning:'Behaviour in keeping with good taste and propriety; correct and dignified conduct in social situations.', origin:'From Latin decorum — that which is seemly or fitting.', ex:'"The letter-writer\'s clumsy attempts at decorum made the obscenities even more absurd."',src:'wll'},
+{w:'Defiant', pos:'adjective', pron:'dih-<b>FY</b>-unt', meaning:'Boldly refusing to obey or comply; showing open resistance to authority without fear.', origin:'From Old French defier — to challenge.', ex:'"She remained defiant in the face of enormous pressure to step down."',src:'crown'},
+{w:'Denounce', pos:'verb', pron:'dih-<b>NOWNS</b>', meaning:'To publicly declare someone or something as wrong, evil, or illegal; to formally accuse someone in public.', origin:'From Old French denoncer, from Latin denuntiare — to proclaim.', ex:'"The Prime Minister was denounced in Parliament for misleading the public."',src:'bf'},
+{w:'Devilment', pos:'noun', pron:'<b>DEV</b>-ul-munt', meaning:'Mischievous or wicked behaviour; a reckless trouble-making spirit deeper than simple naughtiness.', origin:'From devil + -ment. An older British-Irish English word.', ex:'"You have your mother\'s common sense, but your father\'s devilment." — Polly Gray to Tommy Shelby',src:'pb'},
+{w:'Devout', pos:'adjective', pron:'dih-<b>VOWT</b> (rhymes with "out")', meaning:'Deeply religious and pious; having strong sincere religious belief that governs one\'s daily life.', origin:'From Old French devot, from Latin devotus — dedicated to God.', ex:'"Edith Swan was a devout Christian whose entire identity was built on public virtue."',src:'wll'},
+{w:'Discern', pos:'verb', pron:'dih-<b>SERN</b>', meaning:'To recognise or perceive something clearly; to see or notice something with the mind or senses, especially something subtle.', origin:'From Old French discerner, from Latin discernere — to separate or distinguish.', ex:'"It was difficult to discern whether he was telling the truth or simply performing."',src:'bf'},
+{w:'Dodge', pos:'verb / noun', pron:'<b>DOJ</b> (rhymes with "lodge")', meaning:'To avoid something or someone cleverly; to evade a question or responsibility.', origin:'Possibly from Scottish dialectal dodd.', ex:'"He dodged every difficult question put to him."',src:'savile'},
+{w:'Dodgy', pos:'adjective', pron:'<b>DOJ</b>-ee', meaning:'Suspicious; not to be trusted; of poor quality; possibly illegal or dishonest. "That looks dodgy" = that seems suspicious. A very British way of expressing distrust.', origin:'From dodge — to evade. British slang in wide use since the 19th century.', ex:'"I don\'t trust that geezer — he seems a bit dodgy to me."',src:'bc'},
+// ═══ E ═══
+{w:'Eccentric', pos:'adjective / noun', pron:'ik-<b>SEN</b>-trik', meaning:'Unconventional and slightly strange in behaviour or appearance; pleasantly odd. Britain has a particular fondness for its eccentrics — they are often celebrated rather than mocked.', origin:'From Greek ekkentros — off-centre.', ex:'"The British have always had a soft spot for an eccentric — the odder the better."',src:'bc'},
+{w:'Egalitarian', pos:'adjective / noun', pron:'ih-gal-ih-<b>TAIR</b>-ee-un', meaning:'Believing in and supporting the principle that all people are equal and deserve equal rights regardless of class.', origin:'From French égalitaire, from Latin aequalis — equal.', ex:'"Her egalitarian views put her at odds with the rigid class system around her."',src:'crown'},
+{w:'Eloquent', pos:'adjective', pron:'<b>EL</b>-uh-kwent', meaning:'Fluent and persuasive in speaking or writing; expressing ideas in a clear and effective way.', origin:'From Latin eloquens — speaking out, from ex (out) + loqui (to speak).', ex:'"Churchill was perhaps the most eloquent wartime speaker Britain has ever produced."',src:'bf'},
+{w:'Eminent', pos:'adjective', pron:'<b>EM</b>-ih-nent', meaning:'Famous and respected, especially in a particular field; of high rank and distinction.', origin:'From Latin eminere — to stand out or project.', ex:'"An eminent barrister was called to advise the Palace on the constitutional matter."',src:'bf'},
+{w:'Emit', pos:'verb', pron:'ih-<b>MIT</b>', meaning:'To send out or release something such as light, sound, heat, or a smell.', origin:'From Latin emittere — to send out.', ex:'"The old television set emitted a faint buzzing sound."',src:'savile'},
+{w:'Enigma', pos:'noun', pron:'ih-<b>NIG</b>-muh', meaning:'A person or thing that is mysterious, puzzling, or difficult to understand.', origin:'From Greek ainigma — a riddle. Famous as the name of the WWII code-breaking machine at Bletchley Park.', ex:'"To many who knew him, he remained an absolute enigma."',src:'savile'},
+{w:'Exacerbate', pos:'verb', pron:'ig-<b>ZAS</b>-er-bayt', meaning:'To make something that is already bad even worse; to intensify or aggravate.', origin:'From Latin exacerbare — to make harsh.', ex:'"The tabloid coverage only served to exacerbate the royal family\'s difficulties."',src:'bf'},
+{w:'Exonerate', pos:'verb', pron:'ig-<b>ZON</b>-er-ayt', meaning:'To officially clear someone of blame or criminal charges; to completely absolve of responsibility.', origin:'From Latin exonerare — to free from a burden.', ex:'"She was finally exonerated after spending three years in prison for a crime she did not commit."',src:'bf'},
+// ═══ F ═══
+{w:'Façade', pos:'noun', pron:'fuh-<b>SAHD</b>  (the Ç is silent)', meaning:'The front face of a building; or a false impression that hides something unpleasant or dishonest.', origin:'From French façade — front of a building.', ex:'"The charity work was merely a façade hiding a deeply sinister character."',src:'savile'},
+{w:'Faffing', pos:'verb (gerund)', pron:'<b>FAF</b>-ing', meaning:'Wasting time in an aimless or disorganised way; messing about without purpose. "Stop faffing about!" = stop wasting time! Very British expression of exasperation.', origin:'Origin uncertain — possibly from dialect faff (to blow in puffs). British English from the 18th century.', ex:'"Stop faffing about and just get it done!" — heard in every British workplace.',src:'bc'},
+{w:'Faltered', pos:'verb (past tense)', pron:'<b>FAWL</b>-terd', meaning:'Lost strength or confidence; moved or spoke in an unsteady way; began to fail.', origin:'Possibly from Old Norse faltrast — to be burdened.', ex:'"His voice faltered as he described what he had witnessed."',src:'savile'},
+{w:'Fancy', pos:'verb / adjective', pron:'<b>FAN</b>-see', meaning:'(Verb) To like someone romantically; to feel like having or doing something. "Do you fancy him?" = are you attracted to him? "I fancy a cup of tea" = I feel like having tea. (Adjective) Elaborate, expensive, or upper-class.', origin:'A shortening of "fantasy." British English uses "fancy" as a casual verb in ways American English does not.', ex:'"He clearly fancies her — have you not noticed?"',src:'bc'},
+{w:'Fervent', pos:'adjective', pron:'<b>FER</b>-vunt', meaning:'Having or displaying intense passion, enthusiasm, or belief; deeply earnest and sincere.', origin:'From Latin fervens — boiling, glowing.', ex:'"She was a fervent supporter of the Commonwealth and all it represented."',src:'crown'},
+{w:'Feud', pos:'noun / verb', pron:'<b>FYOOD</b> (rhymes with "food")', meaning:'A prolonged and bitter quarrel between two families or groups, often involving revenge and lasting generations.', origin:'From Old French faide — enmity.', ex:'"The feud between the Shelby family and Luca Changretta had roots that went back years."',src:'pb'},
+{w:'Fibs', pos:'noun (plural) / verb', pron:'<b>FIBZ</b> (rhymes with "ribs")', meaning:'Small lies; untruths, usually about minor things. To fib = to tell small lies. Much gentler than "lies."', origin:'Possibly a shortening of fible-fable — nonsense.', ex:'"He thought he could get away with the occasional fib, but the truth eventually came out."',src:'savile'},
+{w:'Fit', pos:'adjective (British slang)', pron:'<b>FIT</b>', meaning:'In British slang, "fit" primarily means attractive or good-looking — not necessarily "in good physical shape." "He\'s well fit" = he\'s very attractive. This is a very common British usage that confuses non-British speakers.', origin:'Evolved from the standard meaning of "fit" (healthy, able-bodied) into slang for attractive.', ex:'"Did you see the new barman at the Garrison? He\'s well fit."',src:'bc'},
+{w:'Formidable', pos:'adjective', pron:'<b>FOR</b>-mid-uh-bul  (British stress on first syllable, not second)', meaning:'Inspiring fear or respect through being impressively large, powerful, or capable. "A formidable opponent" = a very difficult enemy to defeat.', origin:'From French formidable, from Latin formidare — to fear.', ex:'"Aunt Polly was the most formidable woman in Birmingham — nobody crossed her."',src:'bf'},
+{w:'Fortnight', pos:'noun', pron:'<b>FORT</b>-nyt', meaning:'Exactly two weeks. One of the most distinctly British time expressions — Americans almost never use it. "See you in a fortnight" = see you in two weeks.', origin:'From Old English feowertyne niht — fourteen nights. Dating back to Old English counting by nights.', ex:'"The trial is scheduled to begin in a fortnight\'s time."',src:'bc'},
+{w:'Forthright', pos:'adjective', pron:'<b>FORTH</b>-ryt', meaning:'Direct and outspoken; saying clearly what one thinks without hesitation or evasion.', origin:'From Old English forð (forward) + riht (right).', ex:'"She was forthright in her criticism, making no attempt to soften the blow."',src:'crown'},
+{w:'Free-spirited', pos:'adjective', pron:'<b>FREE</b>-spir-ih-tid', meaning:'Living according to one\'s own wishes with no concern for conventions or rules; spontaneous and independent.', origin:'Compound of free + spirited. Describes Rose Gooding\'s character perfectly.', ex:'"Rose was free-spirited and fearless — she refused to be silenced by anyone."',src:'wll'},
+// ═══ G ═══
+{w:'Garrison', pos:'noun', pron:'<b>GAR</b>-ih-sun', meaning:'A body of troops stationed in a fortified place. The Garrison Tavern is the Shelby family\'s headquarters pub in Small Heath — their command centre.', origin:'From Old French garnison — a supply or fortification.', ex:'"Meet me at the Garrison. And come alone." — Tommy Shelby',src:'pb'},
+{w:'Geezer', pos:'noun', pron:'<b>GEE</b>-zer', meaning:'A man, especially one who is eccentric or elderly. In London slang, "geezer" simply means "a man" — usually with connotations of being streetwise or working-class. A "proper geezer" = a reliable, solid man.', origin:'From dialect — possibly from guiser, a person in disguise. Strong in Cockney and British working-class culture.', ex:'"He\'s a proper geezer — been on these streets for thirty years."',src:'bc'},
+{w:'Gimmick', pos:'noun', pron:'<b>GIM</b>-ik', meaning:'A trick or device used to attract attention or publicity, often seen as cheap or dishonest.', origin:'Possibly American slang from the 1920s, widely adopted into British English.', ex:'"Critics dismissed his charity appearances as nothing more than a publicity gimmick."',src:'savile'},
+{w:'Gobsmacked', pos:'adjective', pron:'<b>GOB</b>-smakt', meaning:'Utterly astonished; completely speechless with shock or surprise. "Gob" is British slang for mouth — gobsmacked = smacked in the mouth with shock.', origin:'From gob (British slang for mouth) + smacked. Northern British/Scottish origin, in wide use since the 1980s.', ex:'"I was absolutely gobsmacked when she announced her resignation."',src:'bc'},
+{w:'Graft', pos:'noun / verb', pron:'<b>GRAFT</b>', meaning:'(British slang) Hard work; to work very hard. "It\'s pure graft" = it\'s sheer hard work. Also means a bribe in older British usage (political graft).', origin:'From British dialectal graft — to dig hard. The hard-work sense is distinctly British.', ex:'"The Shelbys got where they are through graft — hard work, no shortcuts."',src:'bc'},
+{w:'Gravest', pos:'adjective (superlative of "grave")', pron:'<b>GRAY</b>-vist', meaning:'Most serious, most critical, or most severe situation possible.', origin:'From Latin gravis — heavy, serious.', ex:'"The Prime Minister described it as the gravest constitutional crisis of the century."',src:'crown'},
+{w:'Grievous', pos:'adjective', pron:'<b>GREE</b>-vus', meaning:'Very severe, serious, or causing great pain. "Grievous Bodily Harm" (GBH) is an actual British legal charge for serious physical assault.', origin:'From Old French grevous, from Latin gravis — heavy.', ex:'"The injuries sustained were grievous — the court sentenced accordingly."',src:'bf'},
+{w:'Gutted', pos:'adjective', pron:'<b>GUT</b>-id', meaning:'Deeply disappointed; emotionally devastated. One of Britain\'s most expressive and widely used slang terms for disappointment. "I\'m absolutely gutted" = I\'m devastated.', origin:'From the literal sense of having one\'s guts removed — the emptiness of profound disappointment.', ex:'"He was absolutely gutted when he didn\'t get the job he\'d worked so hard for."',src:'bc'},
+// ═══ H ═══
+{w:'Heartfelt', pos:'adjective', pron:'<b>HART</b>-felt', meaning:'Deeply and sincerely felt; coming genuinely from the heart.', origin:'From heart + felt.', ex:'"She gave a heartfelt apology to the survivors."',src:'savile'},
+{w:'Henceforth', pos:'adverb', pron:'<b>HENS</b>-forth', meaning:'From this time on; starting now and continuing into the future. A formal, slightly old-fashioned British expression.', origin:'From hence (from this place/time) + forth (forward). Middle English origin.', ex:'"The Palace announced that henceforth, all official communications would be approved centrally."',src:'bf'},
+{w:'Hierarchy', pos:'noun', pron:'<b>HY</b>-uh-rar-kee', meaning:'A system in which people or groups are ranked one above the other according to power or authority.', origin:'From Greek hierarchia — rule of a high priest.', ex:'"Everyone in Small Heath understood the hierarchy — Tommy was at the top, and his word was final."',src:'pb'},
+{w:'Hitherto', pos:'adverb', pron:'<b>HITH</b>-er-too', meaning:'Until now; up to this point in time. A formal expression used to describe something that existed before a certain moment but may change.', origin:'From hither (to this place) + to. Old English in origin.', ex:'"Details hitherto unknown to the public were finally revealed at the inquest."',src:'bf'},
+{w:'Honorary', pos:'adjective', pron:'<b>ON</b>-uh-ruh-ree  (British: the H is SILENT)', meaning:'Given as an honour without the usual requirements; holding a title as a mark of respect, not through normal qualifications.', origin:'From Latin honorarius — done or given as an honour.', ex:'"He was awarded an honorary degree by the university."',src:'savile'},
+{w:'Horrific', pos:'adjective', pron:'huh-<b>RIF</b>-ik', meaning:'Causing horror or shock; extremely terrible or deeply disturbing.', origin:'From Latin horrificus — causing terror.', ex:'"The scale of the abuse was described as horrific."',src:'savile'},
+// ═══ I ═══
+{w:'Impeccable', pos:'adjective', pron:'im-<b>PEK</b>-uh-bul', meaning:'In accordance with the highest standards; faultless; without any mistakes or weaknesses.', origin:'From Latin impeccabilis — not able to sin, from im (not) + peccare (to sin).', ex:'"The Queen\'s impeccable behaviour under pressure became a model of royal conduct."',src:'bf'},
+{w:'Inanimate', pos:'adjective', pron:'in-<b>AN</b>-ih-mut', meaning:'Not alive; lacking life or consciousness. An inanimate object — like a chair or stone — has no life or feelings.', origin:'From Latin inanimatus — in (not) + animatus (alive).', ex:'"He seemed to treat people as inanimate objects, with no feelings whatsoever."',src:'crown'},
+{w:'Indignant', pos:'adjective', pron:'in-<b>DIG</b>-nant', meaning:'Feeling or showing anger or annoyance at something perceived as unfair or morally wrong. A very British emotion — quiet but firm moral outrage.', origin:'From Latin indignari — to consider unworthy.', ex:'"She was indignant at the suggestion that she had acted improperly."',src:'bf'},
+{w:'Infidelity', pos:'noun', pron:'in-fih-<b>DEL</b>-ih-tee', meaning:'Unfaithfulness in a marriage or committed relationship; having a romantic relationship outside one\'s partnership.', origin:'From Latin infidelitas — lack of faith.', ex:'"The marriage had been irreparably damaged by years of infidelity."',src:'crown'},
+{w:'Infirmary', pos:'noun', pron:'in-<b>FER</b>-muh-ree', meaning:'A hospital or room for treating sick or injured people, especially in a school, prison, or institution.', origin:'From Latin infirmarius — a place for the infirm.', ex:'"Victims reported being taken to the hospital infirmary under false pretences."',src:'savile'},
+{w:'Innit', pos:'interjection (modern slang)', pron:'<b>IN</b>-it', meaning:'A contraction of "isn\'t it?" used as a general tag question. Can be attached to almost any sentence for emphasis or agreement. Very common in modern British urban speech, especially London. Not grammatically standard but widely understood.', origin:'Shortened from "isn\'t it" — originated in British Asian and Black British communities in the 1980s-90s, now used across all demographics.', ex:'"It\'s well cold out there, innit?" — modern British street speech.',src:'bc'},
+{w:'Innuendo', pos:'noun', pron:'in-yoo-<b>EN</b>-doh', meaning:'An indirect or subtle hint implying something improper or damaging; a suggestive remark that says one thing but means another.', origin:'From Latin innuendo — by nodding at; by hinting.', ex:'"The letters were stuffed with sexual innuendo and crude insults that made no grammatical sense."',src:'wll'},
+{w:'Insolent', pos:'adjective', pron:'<b>IN</b>-suh-lent', meaning:'Showing a rude and arrogant lack of respect; disrespectfully contemptuous.', origin:'From Latin insolens — unusual, arrogant.', ex:'"The young constable was dismissed for making insolent remarks to a senior officer."',src:'bf'},
+{w:'Instinctively', pos:'adverb', pron:'in-<b>STINK</b>-tiv-lee', meaning:'Acting on natural instinct without thinking; doing something automatically or by intuition.', origin:'From Latin instinctus — urged from within.', ex:'"She instinctively felt that something was very wrong."',src:'savile'},
+{w:'Integrity', pos:'noun', pron:'in-<b>TEG</b>-rih-tee', meaning:'The quality of being honest and having strong moral principles; moral uprightness. "A man of integrity" = someone who does the right thing even when no one is watching.', origin:'From Latin integritas — wholeness, soundness.', ex:'"Whatever else was said about her, nobody doubted her personal integrity."',src:'bf'},
+{w:'Intimidation', pos:'noun', pron:'in-tim-ih-<b>DAY</b>-shun', meaning:'The act of frightening or threatening someone to make them do something against their will.', origin:'From Medieval Latin intimidare — to make afraid.', ex:'"Tommy preferred intimidation over violence — making people afraid was more efficient."',src:'pb'},
+// ═══ J ═══
+{w:'Jolly', pos:'adjective / adverb', pron:'<b>JOL</b>-ee', meaning:'(Adjective) Happy and cheerful. (Adverb — classic British) Very; used as an intensifier. "Jolly good!" = very good! "Jolly well" = absolutely. Classic upper-class British English intensifier that is now often used humorously.', origin:'From Old French joli — merry, pleasant.', ex:'"Jolly good show — that went rather better than expected!"',src:'bc'},
+{w:'Judicious', pos:'adjective', pron:'joo-<b>DISH</b>-us', meaning:'Having or showing good judgement and wisdom, especially in practical matters; sensible and well-considered.', origin:'From Latin judicium — judgement.', ex:'"A judicious choice of words at the right moment could avoid an entire constitutional crisis."',src:'bf'},
+// ═══ K ═══
+{w:'Keen', pos:'adjective', pron:'<b>KEEN</b>', meaning:'Enthusiastic; eager; very interested in something. "Keen as mustard" = extremely enthusiastic. Also means sharp (a keen blade). In British English, "not keen" = I don\'t like it.', origin:'From Old English cene — brave, sharp.', ex:'"She was keen to make a good impression — perhaps too keen, as it turned out."',src:'bc'},
+{w:'Knackered', pos:'adjective', pron:'<b>NAK</b>-erd', meaning:'Completely exhausted; utterly worn out. One of Britain\'s most beloved expressions of fatigue. Also means broken or not working properly.', origin:'From knacker — originally a horse slaughterer. "Knackered" like a horse sent to the knacker\'s yard — completely used up.', ex:'"I\'m absolutely knackered — I\'ve been on my feet since five this morning."',src:'bc'},
+{w:'Knighthood', pos:'noun', pron:'<b>NYT</b>-hood  (the K is SILENT)', meaning:'The title and rank of knight, awarded by the British monarch for outstanding service. The holder uses "Sir" before their name.', origin:'From Old English cniht (youth, servant) + hood (condition).', ex:'"He was awarded a knighthood despite growing concerns about his conduct."',src:'savile'},
+// ═══ L ═══
+{w:'Lackey', pos:'noun', pron:'<b>LAK</b>-ee', meaning:'A servile follower who does whatever they are told; someone who acts as another person\'s servant without question or dignity.', origin:'From French laquais — a footman or servant.', ex:'"You\'re not a man. You\'re just a lackey." — Tommy Shelby',src:'pb'},
+{w:'Lad', pos:'noun', pron:'<b>LAD</b>', meaning:'A boy or young man. In British culture, "the lads" = a group of male friends. "A bit of a lad" = someone who is rowdy, fun-loving, and possibly irresponsible. Very culturally loaded term.', origin:'From Middle English ladde — a young man or servant. Has been in British English since the 14th century.', ex:'"He was always one of the lads — down the pub every Friday without fail."',src:'bc'},
+{w:'Lament', pos:'noun / verb', pron:'luh-<b>MENT</b>', meaning:'To feel or express grief, regret, or sorrow about something lost or gone. "To lament" = to mourn deeply. A lament is a passionate expression of grief.', origin:'From Latin lamentum — a mourning cry.', ex:'"She lamented the passing of the old Britain she had known as a girl."',src:'bf'},
+{w:'Lass', pos:'noun', pron:'<b>LAS</b> (rhymes with "mass")', meaning:'A girl or young woman. Mainly used in Northern England and Scotland. The female equivalent of "lad." "Come on, lass" = come on, love.', origin:'From Old Norse laskura — an unmarried woman. Primarily Northern English and Scottish.', ex:'"She was a formidable lass — nobody told her what to do."',src:'bc'},
+{w:'Legend', pos:'noun', pron:'<b>LEJ</b>-und', meaning:'(Modern British slang) A very impressive, admirable, or likeable person. "He\'s an absolute legend" = he\'s fantastic. This modern slang use differs from the traditional meaning (a famous historical figure).', origin:'From Latin legenda — things to be read. The modern slang meaning emerged in British culture in the 1990s–2000s.', ex:'"Cheers, mate — you\'re an absolute legend for sorting that out."',src:'bc'},
+{w:'Libel', pos:'noun / verb', pron:'<b>LY</b>-bul', meaning:'A published false statement that damages a person\'s reputation; written defamation. The real case was known as the Littlehampton Libels of the 1920s.', origin:'From Latin libellus — a little book or pamphlet.', ex:'"The anonymous letters constituted criminal libel — a serious offence in 1920s British law."',src:'wll'},
+{w:'Locomotion', pos:'noun', pron:'loh-kuh-<b>MOH</b>-shun', meaning:'The ability or power to move from place to place; movement from one location to another.', origin:'From Latin loco (from a place) + motio (motion).', ex:'"The documentary traced his locomotion across BBC buildings over the decades."',src:'savile'},
+// ═══ M ═══
+{w:'Machinations', pos:'noun (plural)', pron:'mak-ih-<b>NAY</b>-shunz', meaning:'Complex, cunning schemes or plots designed to achieve a hidden goal.', origin:'From Latin machinari — to devise or plot.', ex:'"Tommy Shelby\'s machinations led rivals to accuse him of being a traitor to his class."',src:'pb'},
+{w:'Malevolent', pos:'adjective', pron:'muh-<b>LEV</b>-uh-lent', meaning:'Having or showing a wish to do evil to others; deeply harmful in intention.', origin:'From Latin malevolens — wishing ill, from malus (bad) + velle (to wish).', ex:'"The inspector had a malevolent intelligence — he wanted to destroy the Shelbys entirely."',src:'bf'},
+{w:'Mate', pos:'noun', pron:'<b>MAYT</b>', meaning:'Friend; also used as a casual form of address even to strangers. "Alright, mate?" = Hello, how are you? "My mate" = my friend. Arguably the single most important word in British casual speech.', origin:'From Middle Low German mate — companion, fellow. Been in British English since the 14th century.', ex:'"Alright, mate? Long time no see!" — the classic British greeting.',src:'bc'},
+{w:'Menace', pos:'noun / verb', pron:'<b>MEN</b>-us', meaning:'A person or thing likely to cause harm; a threatening quality. Tommy Shelby\'s quiet voice carries constant menace.', origin:'From Old French menace, from Latin minacia — threatening things.', ex:'"Tommy\'s words were practically dripping with menace — he didn\'t need to raise his voice."',src:'pb'},
+{w:'Meticulously', pos:'adverb', pron:'muh-<b>TIK</b>-yoo-lus-lee', meaning:'With great care and attention to detail; very precisely and thoroughly.', origin:'From Latin meticulosus — carefully precise.', ex:'"His public image was meticulously crafted over decades."',src:'savile'},
+{w:'Miffed', pos:'adjective', pron:'<b>MIFT</b>', meaning:'Slightly annoyed or offended; mildly put out. Not seriously angry — more like quiet irritation. "A bit miffed" = a little annoyed.', origin:'Origin uncertain — possibly from miff, an early English exclamation of displeasure.', ex:'"She was a bit miffed that nobody had bothered to tell her about the meeting."',src:'bc'},
+{w:'Mint', pos:'adjective (Northern slang)', pron:'<b>MINT</b>', meaning:'Excellent; very good. Northern England slang (especially Newcastle/Geordie area). "That\'s mint, that!" = that\'s brilliant!', origin:'From the freshness and crispness of fresh mint; or from mint condition = perfect/new.', ex:'"New job, more money, closer to home? That\'s mint, that is!"',src:'bc'},
+{w:'Miraculous', pos:'adjective', pron:'mih-<b>RAK</b>-yoo-lus', meaning:'Remarkable and seemingly impossible; like a miracle; extraordinary.', origin:'From Latin miraculum — a wonder.', ex:'"It was miraculous that the truth remained hidden for so long."',src:'savile'},
+// ═══ N ═══
+{w:'Narked', pos:'adjective', pron:'<b>NARKT</b>', meaning:'Irritated; annoyed; put out. "He looks well narked" = he looks very annoyed. Common British informal expression.', origin:'From British slang nark — a police informer or someone who annoys. Related to the word "narc."', ex:'"She was well narked when they cancelled the show at the last minute."',src:'bc'},
+{w:'Nefarious', pos:'adjective', pron:'nih-<b>FAIR</b>-ee-us', meaning:'Wicked and criminal; flagrantly evil or immoral. A strong and somewhat dramatic word for genuinely evil conduct.', origin:'From Latin nefarius — wicked, from nefas (crime against divine law).', ex:'"The Inspector catalogued the nefarious activities of the Peaky Blinders across three counties."',src:'bf'},
+{w:'Nicked', pos:'verb (past tense)', pron:'<b>NIKT</b>', meaning:'(British slang) (1) Stolen — "my bike got nicked." (2) Arrested by the police — "he got nicked last night." Both meanings are equally common in British English.', origin:'From British slang nick — to steal or to arrest. 19th century origin.', ex:'"Oi — who nicked my hat? And two lads got nicked outside the Garrison last night."',src:'bc'},
+{w:'Notorious', pos:'adjective', pron:'nuh-<b>TOR</b>-ee-us', meaning:'Famous or well-known, but for something bad; having a reputation for wrongdoing.', origin:'From Medieval Latin notorius — well known.', ex:'"The Peaky Blinders were the most notorious gang in Birmingham — feared across the city."',src:'pb'},
+{w:'Notwithstanding', pos:'preposition / adverb', pron:'not-with-<b>STAN</b>-ding', meaning:'In spite of; nevertheless; despite. A very formal British expression meaning "even though this obstacle exists."', origin:'From not + withstanding (opposing). Middle English in origin.', ex:'"Notwithstanding the Prime Minister\'s objections, the bill was passed by a large majority."',src:'bf'},
+{w:'Nowt', pos:'pronoun (Northern dialect)', pron:'<b>NOWT</b> (rhymes with "out")', meaning:'Nothing. Purely Northern English (Yorkshire, Lancashire, Geordie). "There\'s nowt wrong wi\' that" = there\'s nothing wrong with that. "Nowt" versus "owt" (anything) is a classic Northern pairing.', origin:'From Old Norse naught — nothing. Preserved in Northern dialects of British English.', ex:'"He said nowt to nobody — just walked out and never came back."',src:'bc'},
+{w:'Nuance', pos:'noun', pron:'<b>NYOO</b>-ahns  (British: "NU" sounds like "NEW")', meaning:'A subtle difference in meaning, expression, or response; a delicate shade of meaning not obvious on the surface.', origin:'From French nuance — shade, tint; from Latin nubes (cloud).', ex:'"Colman brought remarkable nuance to a role that in lesser hands could have been cartoonish."',src:'wll'},
+{w:'Nutter', pos:'noun', pron:'<b>NUT</b>-er', meaning:'A crazy, eccentric, or reckless person. In British English "nutter" is often used affectionately as well as literally. "He\'s a complete nutter" can be admiring or critical depending on tone.', origin:'From nut — British slang for head. "Off his nut" = crazy.', ex:'"Arthur Shelby? Yeah, he\'s a total nutter — that\'s what makes him dangerous."',src:'bc'},
+// ═══ O ═══
+{w:'Oddity', pos:'noun', pron:'<b>OD</b>-ih-tee', meaning:'A strange or unusual person or thing; something that stands out as peculiar or eccentric.', origin:'From odd + -ity.', ex:'"Even his closest colleagues regarded him as a bit of an oddity."',src:'savile'},
+{w:'Opium', pos:'noun', pron:'<b>OH</b>-pee-um', meaning:'A powerful narcotic drug made from poppy plants; highly addictive. The Peaky Blinders are involved in opium trading throughout the series.', origin:'From Latin opium, from Greek opion — poppy juice.', ex:'"We want you to take us to where the opium is being stored." — Season 6',src:'pb'},
+{w:'Ostensibly', pos:'adverb', pron:'os-<b>TEN</b>-sib-lee', meaning:'Apparently or purportedly, but perhaps not actually; seeming to be true on the surface while possibly masking the reality.', origin:'From Latin ostendere — to show.', ex:'"He was ostensibly visiting on official business, but everyone knew the real reason."',src:'bf'},
+// ═══ P ═══
+{w:'Parabola', pos:'noun', pron:'puh-<b>RAB</b>-uh-luh', meaning:'A U-shaped mathematical curve; used figuratively to describe a dramatic rise and fall — like the arc of a career or life.', origin:'From Greek parabolē — a placing side by side.', ex:'"His career followed a dramatic parabola — a rapid rise and a devastating fall."',src:'crown'},
+{w:'Paramount', pos:'adjective', pron:'<b>PA</b>-ruh-mownt', meaning:'More important than anything else; supreme in importance; taking absolute priority.', origin:'From Old French paramont — above, from par (by) + amont (above).', ex:'"The welfare of the nation must be paramount — all other considerations come second."',src:'bf'},
+{w:'Patriarchal', pos:'adjective', pron:'pay-tree-<b>AR</b>-kul', meaning:'Relating to a system in which men hold the power and women are excluded. Edith\'s father controls her life completely.', origin:'From Greek patēr (father) + arkhein (to rule).', ex:'"The film exposes the absurdity of the patriarchal system — women\'s behaviour controlled by men."',src:'wll'},
+{w:'Peaky Blinders (the name)', pos:'proper noun', pron:'<b>PEE</b>-kee  <b>BLY</b>-nderz', meaning:'"Peaky" = from the peaked flat cap. "Blinder" = Birmingham slang for someone impressively dapper. Together: stylishly dressed men with peaked caps who were dangerous and feared.', origin:'Real historical gang from Small Heath, Birmingham, operating from the 1880s–1910s. The TV show is inspired by — but fictionalises — their story.', ex:'"Tell him you don\'t f*** with the Peaky Blinders." — Arthur Shelby',src:'pb'},
+{w:'Peckish', pos:'adjective', pron:'<b>PEK</b>-ish', meaning:'Slightly hungry; feeling like a light snack. "I\'m a bit peckish" = I could do with something to eat. A very British way of expressing mild hunger without complaining.', origin:'From peck — a small amount of food, like a bird\'s peck.', ex:'"Anyone else a bit peckish? I might put the kettle on and find some biscuits."',src:'bc'},
+{w:'Peruse', pos:'verb', pron:'puh-<b>ROOZ</b>', meaning:'To read something carefully and thoroughly. Note: often incorrectly used to mean "skim" — but the correct British meaning is to read with close attention. "Peruse the document" = read it carefully.', origin:'From per (through) + use — to use something up by reading it entirely.', ex:'"The Prime Minister was asked to peruse the full report before the morning briefing."',src:'bf'},
+{w:'Persona non grata', pos:'Latin phrase', pron:'per-<b>SOH</b>-nuh  non  <b>GRAH</b>-tuh', meaning:'An unwelcome or unacceptable person. Used formally in diplomacy; informally when someone is no longer welcome anywhere.', origin:'Latin: persona (person) + non (not) + grata (welcome).', ex:'"After the scandal, he was effectively persona non grata at the Palace."',src:'crown'},
+{w:'Pertinent', pos:'adjective', pron:'<b>PER</b>-tih-nent', meaning:'Relevant or applicable to the matter in hand; directly connected to what is being discussed.', origin:'From Latin pertinere — to belong to.', ex:'"Only evidence pertinent to the charges could be presented to the court."',src:'bf'},
+{w:'Plagued', pos:'verb (past tense)', pron:'<b>PLAYGD</b> (rhymes with "aged")', meaning:'Persistently troubled or tormented; afflicted repeatedly with problems or difficulties.', origin:'From Latin plaga — a blow or wound.', ex:'"The royal family was plagued by negative press coverage throughout the decade."',src:'crown'},
+{w:'Plausible', pos:'adjective', pron:'<b>PLAW</b>-zih-bul', meaning:'Seeming reasonable or probable; appearing believable or convincing, though may not be true.', origin:'From Latin plausibilis — deserving applause.', ex:'"He was described as charming, confident, and thoroughly plausible."',src:'savile'},
+{w:'Pledge', pos:'noun / verb', pron:'<b>PLEJ</b> (rhymes with "edge")', meaning:'A solemn and binding promise; to formally commit to doing something. Stronger than a simple promise.', origin:'From Old French plege — a surety or guarantee.', ex:'"She pledged to serve her country and Commonwealth for the rest of her life."',src:'crown'},
+{w:'Pompous', pos:'adjective', pron:'<b>POM</b>-pus', meaning:'Affectedly and irritatingly grand, solemn, or self-important; using language or behaviour designed to impress. The British are particularly attuned to pomposity and mock it mercilessly.', origin:'From Latin pompa — solemn procession.', ex:'"The pompous old colonel insisted on being addressed by his full title at all times."',src:'bf'},
+{w:'Posh', pos:'adjective', pron:'<b>POSH</b>', meaning:'Elegant, expensive, or upper-class. "Posh accent" = upper-class British accent (received pronunciation). "Posh restaurant" = expensive, fancy restaurant. Can be used admiringly or mockingly.', origin:'Origin uncertain — possibly from Romany posh — money; or from the acronym "Port Out Starboard Home" (preferred ship berths). The slang meaning is distinctly British.', ex:'"She sounded well posh — definitely not from Small Heath."',src:'bc'},
+{w:'Pragmatic', pos:'adjective', pron:'prag-<b>MAT</b>-ik', meaning:'Dealing with things sensibly and practically rather than theoretically; focused on what actually works. Tommy Shelby\'s entire worldview is pragmatic.', origin:'From Greek pragmatikos — fit for action.', ex:'"Tommy\'s brutal pragmatism meant no emotion — only outcomes — guided his decisions."',src:'pb'},
+{w:'Precarious', pos:'adjective', pron:'prih-<b>KAIR</b>-ee-us', meaning:'Not securely held or in position; dangerously likely to fall or collapse; uncertain and risky.', origin:'From Latin precarius — obtained by prayer (implying uncertainty).', ex:'"The Shelbys\' grip on power was more precarious than it appeared."',src:'bf'},
+{w:'Preordained', pos:'adjective', pron:'pree-or-<b>DAYND</b>', meaning:'Decided or determined in advance by fate, God, or a higher power; inevitable regardless of human choice.', origin:'From Latin prae (before) + ordinare (to arrange).', ex:'"She felt as though her role as Queen was preordained long before her birth."',src:'crown'},
+{w:'Profound', pos:'adjective', pron:'pruh-<b>FOWND</b>', meaning:'Very deep and meaningful; showing great knowledge or insight; having a strong and lasting effect.', origin:'From Latin profundus — deep.', ex:'"The death of the King had a profound effect on the entire nation."',src:'crown'},
+{w:'Proper', pos:'adjective / adverb (slang)', pron:'<b>PROP</b>-er', meaning:'(British slang) Real; genuine; or used as an intensifier — "proper good" = really good, "proper scared" = really scared. "That\'s proper" = that\'s right/correct. Also means correct in formal sense.', origin:'From Old French propre, from Latin proprius — one\'s own. The intensifier use is distinctly British.', ex:'"That was a proper good fight — respect to both lads."',src:'bc'},
+{w:'Prudent', pos:'adjective', pron:'<b>PROO</b>-dent', meaning:'Acting with or showing care and thought for the future; wise and cautious in practical matters.', origin:'From Latin prudens — foreseeing, wise.', ex:'"It would be prudent to seek legal advice before making any public statement."',src:'bf'},
+{w:'Prudish', pos:'adjective', pron:'<b>PROO</b>-dish', meaning:'Easily shocked by matters relating to sex or bodily functions; excessively proper and easily offended by anything indecent.', origin:'From French prude — a woman overly modest about virtue.', ex:'"Conservative and prudish, Edith lived with her tyrannical father and rarely left the house."',src:'wll'},
+// ═══ Q ═══
+{w:'Quid', pos:'noun (slang)', pron:'<b>KWID</b>', meaning:'One pound sterling. "A quid" = £1. "Five quid" = £5. Plural stays "quid" (not "quids"). The most common British slang for money. "Cost me a quid" = it cost me one pound.', origin:'Origin uncertain — possibly from Latin quid (what) or from Quidhampton, where paper for banknotes was made.', ex:'"He owes me twenty quid from last week and I want it back."',src:'bc'},
+// ═══ R ═══
+{w:'Rallied', pos:'verb (past tense)', pron:'<b>RAL</b>-eed', meaning:'Brought together for a shared purpose; recovered strength after a setback; gathered support.', origin:'From French rallier — to bring back together.', ex:'"Supporters rallied to defend him even as the accusations mounted."',src:'savile'},
+{w:'Renegade', pos:'noun / adjective', pron:'<b>REN</b>-ih-gayd', meaning:'A person who deserts and betrays an organisation, country, or set of principles; a rebel who goes their own way.', origin:'From Spanish renegado, from Latin renegare — to deny or renounce.', ex:'"Any renegade within the family was dealt with swiftly — Tommy could not afford disloyalty."',src:'pb'},
+{w:'Repression', pos:'noun', pron:'rih-<b>PRESH</b>-un', meaning:'The suppression of thoughts, feelings, or impulses — forcing them down below the surface. The film shows that repression always eventually erupts.', origin:'From Latin reprimere — to press back.', ex:'"When there is an attempt to contain speech, it is usually motivated by power — and repression will always erupt."',src:'wll'},
+{w:'Resolute', pos:'adjective', pron:'<b>REZ</b>-uh-loot', meaning:'Admirably purposeful, determined, and unwavering; refusing to give up or change course in the face of difficulty.', origin:'From Latin resolutus — loosened, released, determined.', ex:'"She remained resolute in her refusal to abdicate despite the enormous pressure."',src:'bf'},
+{w:'Reticent', pos:'adjective', pron:'<b>RET</b>-ih-sent', meaning:'Not readily revealing one\'s thoughts or feelings; reluctant to speak; reserved and quiet. Different from "reluctant" — reticent specifically means unwilling to speak.', origin:'From Latin reticere — to keep silent.', ex:'"The Queen was famously reticent about her personal feelings — she expressed them through action."',src:'bf'},
+{w:'Romani / Romany', pos:'noun / adjective', pron:'<b>ROH</b>-muh-nee  (NOT the same as "Romanian" — completely different)', meaning:'Relating to the Romani people — an ethnic group with roots in northern India who have lived as travellers across Europe for centuries. The Shelby family are Romani Gypsies.', origin:'From Romani — the people\'s own name for themselves.', ex:'"It\'s in our gypsy blood. We live somewhere between life and death, waiting to move on." — Tommy Shelby',src:'pb'},
+{w:'Rubbish', pos:'noun / adjective / exclamation', pron:'<b>RUB</b>-ish', meaning:'(1) Trash or garbage. (2) Nonsense — "that\'s rubbish!" = that\'s completely untrue. (3) Bad quality — "a rubbish film." The exclamation "Rubbish!" is a classic British rejection of a claim.', origin:'From Anglo-Norman rubbous — rubble, broken pieces.', ex:'"Rubbish! He was nowhere near that building on the night in question."',src:'bc'},
+// ═══ S ═══
+{w:'Sardonic', pos:'adjective', pron:'sar-<b>DON</b>-ik', meaning:'Grimly mocking or cynical; a dark, bitter humour that expresses contempt. Tommy Shelby\'s characteristic tone throughout the series.', origin:'From French sardonique, from a Sardinian plant said to cause convulsive laughter before death.', ex:'"Tommy\'s sardonic self-awareness — \'I\'m just an extreme example of what a working man can achieve.\'"',src:'pb'},
+{w:'Saviour', pos:'noun', pron:'<b>SAY</b>-vee-er', meaning:'A person who rescues someone from danger or difficulty. In Christianity, refers to Jesus Christ. (British spelling: saviour; American: savior.)', origin:'From Old French sauveour, from Latin salvator — one who saves.', ex:'"He portrayed himself as a saviour of sick children, raising millions for charity."',src:'savile'},
+{w:'Sceptical', pos:'adjective', pron:'<b>SKEP</b>-tih-kul  (British: "SC" sounds like "SK")', meaning:'Having doubts; not easily convinced; questioning whether something is true. (British spelling: sceptical; American: skeptical.)', origin:'From Greek skeptikos — thoughtful, inquiring.', ex:'"Investigators were initially sceptical of the first complaints made against him."',src:'savile'},
+{w:'Scrutinise', pos:'verb', pron:'<b>SKROO</b>-tih-nyz', meaning:'To examine or inspect something closely and thoroughly; to subject to careful investigation. (British spelling: scrutinise; American: scrutinize.)', origin:'From Latin scrutinium — careful search, from scrutari (to search through rubbish).', ex:'"Every claim in the report would be scrutinised by a team of independent investigators."',src:'bf'},
+{w:'Shell Shock / PTSD', pos:'noun', pron:'<b>SHEL</b>  <b>SHOK</b>  /  pee-tee-es-<b>DEE</b>', meaning:'Shell shock was the WWI term for what we now call PTSD — severe psychological damage caused by the horrors of combat. The Shelby brothers all carry unhealed war trauma throughout the series.', origin:'"Shell shock" coined by British psychologist Charles Myers in 1915. The condition was poorly understood and often dismissed as cowardice.', ex:'"Danny Whizz-Bang suffered from shell shock — the trenches of France never truly left him."',src:'pb'},
+{w:'Sinister', pos:'adjective', pron:'<b>SIN</b>-is-ter', meaning:'Suggesting evil, danger, or harm; threatening or ominous in appearance or intention.', origin:'From Latin sinister — left side, considered unlucky in Roman culture.', ex:'"Looking back, many recalled a sinister quality beneath his cheerful exterior."',src:'savile'},
+{w:'Skint', pos:'adjective', pron:'<b>SKINT</b>', meaning:'Having no money; completely broke. Very British expression — "I\'m skint" = I have no money at all. Informal and direct.', origin:'From skinned — stripped bare of everything, even your skin.', ex:'"Can\'t come out tonight, mate — I\'m completely skint until Friday."',src:'bc'},
+{w:'Slog along', pos:'phrasal verb', pron:'<b>SLOG</b>  uh-<b>LONG</b>', meaning:'To continue working or moving slowly with great effort; to persist with difficulty despite hard conditions.', origin:'From British dialectal slog — to hit hard, evolved to mean hard persistent effort.', ex:'"Staff had to slog along under difficult conditions, afraid to speak out."',src:'savile'},
+{w:'Smarmy', pos:'adjective', pron:'<b>SMAR</b>-mee', meaning:'Excessively flattering in a way that feels insincere and unpleasant; unpleasantly smooth and charming.', origin:'From British dialectal smarm — to smooth down; evolved to mean smoothly insincere flattery.', ex:'"The constable was described as smarmy — all smiles to the wrong people."',src:'wll'},
+{w:'Smothering', pos:'verb / adjective', pron:'<b>SMUTH</b>-er-ing', meaning:'Covering completely so as to suffocate; figuratively — a smothering relationship is one that is overly controlling and leaves no room to breathe.', origin:'From Old English smorian — to suffocate.', ex:'"She felt the weight of royal duty smothering her every personal desire."',src:'crown'},
+{w:'Snitch', pos:'noun / verb', pron:'<b>SNICH</b> (rhymes with "witch")', meaning:'A person who secretly informs on others to the police or authority; to betray someone by telling their secrets. In the criminal world, snitching is the ultimate betrayal.', origin:'British slang, 18th century cant. "Snitch from the Parish" in Peaky Blinders means a police informer.', ex:'"As far as I\'m concerned, you\'re a snitch from the Parish." — Polly Gray to Grace, Season 1',src:'pb'},
+{w:'Sobriety', pos:'noun', pron:'suh-<b>BRY</b>-ih-tee', meaning:'The state of being sober (not drunk); also means being serious, calm, and sensible in behaviour or thought.', origin:'From Latin sobrietas, from sobrius — not drunk.', ex:'"The sobriety of the occasion called for restrained and dignified conduct."',src:'crown'},
+{w:'Sorted', pos:'adjective / verb', pron:'<b>SOR</b>-tid', meaning:'Arranged; fixed; dealt with successfully. "It\'s all sorted" = everything is arranged and taken care of. "Are you sorted?" = do you have what you need? Extremely common British expression.', origin:'From sort — to arrange or deal with. The past participle became its own adjective in British slang.', ex:'"Don\'t worry about the tickets — I\'ve got it all sorted."',src:'bc'},
+{w:'Spinster', pos:'noun', pron:'<b>SPIN</b>-ster', meaning:'An older unmarried woman; in 1920s Britain, a deeply loaded and contemptuous term used to dismiss women who lived independently outside marriage.', origin:'Originally a woman who spins thread. Became a legal term for an unmarried woman in the 17th century and a social insult by the 20th.', ex:'"Edith was called a spinster and pitied — which was precisely the social cage she could never escape."',src:'wll'},
+{w:'Staggering', pos:'adjective', pron:'<b>STAG</b>-er-ing', meaning:'Extremely surprising or shocking; almost unbelievable in size or scale.', origin:'From Old Norse stakra — to push.', ex:'"The number of victims was truly staggering."',src:'savile'},
+{w:'Steadfast', pos:'adjective', pron:'<b>STED</b>-fast', meaning:'Resolutely or dutifully firm and unwavering; committed without hesitation to a person, cause, or belief.', origin:'From Old English stedefæst — fixed in place.', ex:'"She remained steadfast in her duty throughout decades of personal loss and public pressure."',src:'bf'},
+{w:'Stride', pos:'noun / verb', pron:'<b>STRYD</b> (rhymes with "ride")', meaning:'A long confident step; to walk with long, decisive steps. Also used figuratively for making great progress.', origin:'From Old English stridan — to stride.', ex:'"He would stride through the hospital wards as if he owned the place."',src:'savile'},
+{w:'Strong-willed', pos:'adjective', pron:'<b>STRONG</b>-wild', meaning:'Determined and resolute; not easily persuaded or influenced by others.', origin:'Compound of strong + willed.', ex:'"Survivors were described as strong-willed women who refused to be silenced."',src:'savile'},
+{w:'Stroppy', pos:'adjective', pron:'<b>STROP</b>-ee', meaning:'Bad-tempered; awkward and difficult; irritably obstinate. "Don\'t get stroppy with me" = don\'t be difficult and rude with me. A very British expression for annoying moodiness.', origin:'Possibly a shortening of obstreperous — noisily difficult. British slang from the mid-20th century.', ex:'"She got well stroppy when they said the order wasn\'t ready."',src:'bc'},
+{w:'Subterfuge', pos:'noun', pron:'<b>SUB</b>-ter-fyooj', meaning:'Deceit used in order to achieve one\'s goal; a trick or stratagem used to escape or avoid something. Tommy Shelby is a master of subterfuge.', origin:'From French subterfuge, from Latin subterfugere — to flee secretly.', ex:'"Tommy\'s plan relied on subterfuge — making enemies believe he was doing one thing while planning another entirely."',src:'pb'},
+// ═══ T ═══
+{w:'Ta-ra', pos:'interjection (Brummie dialect)', pron:'tuh-<b>RAH</b>  (soft "a" — rhymes with "hurrah")', meaning:'Birmingham dialect for "goodbye." Often extended to "ta-ra a bit" = see you later. A warmly casual farewell used throughout the Midlands.', origin:'Regional British English variant of "ta-ta" — a childlike farewell.', ex:'"Ta-ra, bab. I\'ll see you at the Garrison tonight." — Small Heath street dialogue',src:'pb'},
+{w:'Tabloid', pos:'noun / adjective', pron:'<b>TAB</b>-loyd', meaning:'A small-format newspaper focusing on popular news, celebrity stories, and scandals; associated with sensational reporting.', origin:'Originally referred to a compressed tablet of medicine, then a condensed publication format.', ex:'"The tabloid press had long received rumours but chose not to investigate."',src:'savile'},
+{w:'Take the mickey', pos:'phrase', pron:'TAYK  thuh  <b>MIK</b>-ee', meaning:'To mock or make fun of someone; to tease or ridicule. Also "take the mick." Very common British expression for gentle or sarcastic teasing.', origin:'From Cockney rhyming slang: "Mickey Bliss" = piss. "Taking the mickey" = taking the piss = mocking.', ex:'"Are you taking the mickey? You can\'t seriously expect me to believe that."',src:'bc'},
+{w:'Tenacious', pos:'adjective', pron:'teh-<b>NAY</b>-shus', meaning:'Tending to keep a firm hold of something; persistent; not giving up easily despite difficulties.', origin:'From Latin tenax — holding fast, from tenere (to hold).', ex:'"The Shelby family\'s rise was built on tenacious determination — they never let go."',src:'bf'},
+{w:'Temerity', pos:'noun', pron:'tuh-<b>MER</b>-ih-tee', meaning:'Excessive boldness or audacity; daring to do something most people would consider shockingly rude or disrespectful.', origin:'From Latin temeritas — rashness. A formal British word often used with irony.', ex:'"She had the temerity to challenge the Prime Minister directly in front of the Cabinet."',src:'crown'},
+{w:'Tinderbox', pos:'noun', pron:'<b>TIN</b>-der-boks', meaning:'A situation dangerously likely to erupt into violence or conflict at any moment.', origin:'From tinder (dry material used to start a fire) + box.', ex:'"The Prime Minister described the region as a tinderbox, ready to ignite at any moment."',src:'crown'},
+{w:'Traitor', pos:'noun', pron:'<b>TRAY</b>-ter', meaning:'A person who betrays their country, friends, or a cause they were loyal to; someone guilty of treachery or disloyalty.', origin:'From Old French traitor, from Latin traditor — one who hands over.', ex:'"He was branded a traitor for leaking state secrets to a foreign power."',src:'crown'},
+{w:'Treachery', pos:'noun', pron:'<b>TRECH</b>-uh-ree', meaning:'Betrayal of trust; violating loyalty in a way that causes serious harm. In Peaky Blinders, treachery within the family is punished with death.', origin:'From Old French trecherie — deceit.', ex:'"You are no longer a member of this Shelby family. By order of the Peaky f***ing Blinders." — Tommy Shelby',src:'pb'},
+{w:'Triumphant', pos:'adjective', pron:'try-<b>UM</b>-funt', meaning:'Having achieved a great victory or success; feeling or expressing great joy at a victory.', origin:'From Latin triumphans — celebrating a triumph.', ex:'"Survivors felt triumphant when the truth was finally exposed."',src:'savile'},
+{w:'Turf', pos:'noun (slang)', pron:'<b>TERF</b> (rhymes with "surf")', meaning:'A person\'s or gang\'s territory; the area they control and protect. Also refers to horse-racing ground — fitting as the Shelbys are bookmakers.', origin:'Old English turf — a piece of ground. Slang meaning of "territory" developed from the idea of owning land.', ex:'"Small Heath is Shelby turf. Nobody moves here without Tommy\'s permission."',src:'pb'},
+{w:'Twit', pos:'noun', pron:'<b>TWIT</b>', meaning:'A silly or foolish person. Mild British insult — not especially harsh, more dismissive than cruel. "You absolute twit!" = you silly fool!', origin:'From Old English ætwitan — to reproach. Evolved into a mild British insult.', ex:'"You twit — you left the car unlocked all night in Birmingham!"',src:'bc'},
+{w:'Tyrannical', pos:'adjective', pron:'tih-<b>RAN</b>-ih-kul', meaning:'Exercising power in a cruel, unfair, and oppressive way; relating to a tyrant. Edith\'s father Edward Swan is tyrannical — controlling every aspect of her life.', origin:'From Greek tyrannikos, from tyrannos — absolute ruler.', ex:'"Edith Swan lived with her tyrannical father, who controlled her every movement."',src:'wll'},
+// ═══ U ═══
+{w:'Ubiquitous', pos:'adjective', pron:'yoo-<b>BIK</b>-wih-tus', meaning:'Present, appearing, or found everywhere; seeming to be everywhere at once.', origin:'From Latin ubique — everywhere.', ex:'"The flat cap became ubiquitous in Birmingham — every man wore one after the Peaky Blinders made it famous."',src:'bf'},
+{w:'Under the weather', pos:'idiom', pron:'<b>UN</b>-der  thuh  <b>WETH</b>-er', meaning:'Feeling slightly ill or unwell; not one\'s best. A very common British expression for mild illness. "I\'m feeling a bit under the weather" = I\'m not very well.', origin:'A nautical expression — sailors who were seasick went below deck to avoid the weather above.', ex:'"She can\'t come in today — she\'s a bit under the weather."',src:'bc'},
+{w:'Unequivocal', pos:'adjective', pron:'un-ih-<b>KWIV</b>-uh-kul', meaning:'Leaving no doubt; unambiguous; expressed in such a clear way that it can only mean one thing.', origin:'From un (not) + equivocal (ambiguous).', ex:'"The court\'s ruling was unequivocal — the defendant was not guilty on all counts."',src:'bf'},
+{w:'Unnerving', pos:'adjective', pron:'un-<b>NER</b>-ving', meaning:'Causing one to feel unsettled, anxious, or frightened; deeply unsettling.', origin:'From un- (reversal) + nerve + -ing.', ex:'"There was something deeply unnerving about the way he looked at people."',src:'savile'},
+{w:'Usher', pos:'verb / noun', pron:'<b>USH</b>-er', meaning:'To guide or escort someone somewhere; to lead a person into a room or event. Figuratively — "to usher in a new era" means to bring it about.', origin:'From Old French uissier, from Latin ostiarius — doorkeeper.', ex:'"The equerry ushered the guests into the drawing room one by one."',src:'crown'},
+// ═══ V ═══
+{w:'Vehement', pos:'adjective', pron:'<b>VEE</b>-uh-munt', meaning:'Showing strong feeling; forceful, passionate, or intense. "A vehement denial" = a very strong denial. Not merely firm — vehement implies emotional force.', origin:'From Latin vehemens — vigorous, ardent.', ex:'"She made a vehement objection to the proposal — nothing anyone said could change her mind."',src:'bf'},
+{w:'Vendetta', pos:'noun', pron:'ven-<b>DET</b>-uh', meaning:'A prolonged bitter conflict driven by a desire for revenge. In Season 4, Luca Changretta arrives from America to fight a formal vendetta against the Shelby family for honour.', origin:'From Italian vendetta — revenge, from Latin vindicta — vengeance.', ex:'"I want to suggest we fight this vendetta with honour." — Luca Changretta, Season 4',src:'pb'},
+{w:'Vigilant', pos:'adjective', pron:'<b>VIJ</b>-ih-lunt', meaning:'Keeping careful watch for possible danger or difficulties; alert and watchful. "Remain vigilant" is a classic British authority phrase.', origin:'From Latin vigilans — watchful, from vigilare (to keep awake).', ex:'"The authorities urged the public to remain vigilant following the attack."',src:'bf'},
+{w:'Volatile', pos:'adjective', pron:'<b>VOL</b>-uh-tyl  (British: ends in "-tyl", not "-tul")', meaning:'Liable to change rapidly and unpredictably; unstable and potentially dangerous.', origin:'From Latin volatilis — flying, fleeting, from volare — to fly.', ex:'"The negotiations entered a volatile phase, with both sides threatening to walk away."',src:'crown'},
+// ═══ W ═══
+{w:'Wench', pos:'noun', pron:'<b>WENCH</b> (rhymes with "bench")', meaning:'In Brummie/Midlands dialect, an affectionate term for a young woman. In older British usage it could be derogatory. In Wicked Little Letters it appears in the letters as a crude insult.', origin:'From Middle English wenche — a girl or young woman.', ex:'"The letters called her all manner of names — including wench and tart — in clumsy, misused insults."',src:'wll'},
+{w:'Whist', pos:'noun', pron:'<b>WIST</b> (the H is silent — rhymes with "list")', meaning:'A traditional British card game played in groups. In Wicked Little Letters, the women\'s whist club is where Officer Gladys organises her investigation.', origin:'Possibly from whist — hush, silence; or from whisk. A staple of British social life for centuries.', ex:'"Gladys met up with the women from the whist club and told them her plan to expose the truth."',src:'wll'},
+{w:'Wind up', pos:'phrasal verb', pron:'WYND  <b>UP</b>', meaning:'To tease or joke with someone in a way that provokes a reaction; to make someone believe something untrue for amusement. "Are you winding me up?" = are you joking? "He\'s a wind-up merchant" = someone who loves to tease people.', origin:'British English slang — from the idea of "winding up" a mechanical toy to make it move.', ex:'"Are you winding me up? There\'s no way he actually said that!"',src:'bc'},
+{w:'Wince', pos:'verb / noun', pron:'<b>WINS</b> (rhymes with "mince")', meaning:'To make a small involuntary movement or facial expression of pain or distress; a slight flinch.', origin:'From Old English wincian — to blink or flinch.', ex:'"She winced as she recalled the events in graphic detail."',src:'savile'},
+{w:'Wonky', pos:'adjective', pron:'<b>WON</b>-kee', meaning:'Unsteady; crooked; not working properly; slightly off or unstable. "That shelf looks a bit wonky" = that shelf isn\'t straight. A delightfully British expression for something imperfect.', origin:'From British dialectal wank — not firmly fixed. Entered mainstream use in the early 20th century.', ex:'"The whole plan seemed a bit wonky to me — too many things that could go wrong."',src:'bc'},
+// ═══ Z ═══
+{w:'Zany', pos:'adjective', pron:'<b>ZAY</b>-nee', meaning:'Amusingly unconventional and eccentric; comically crazy or silly.', origin:'From Italian zanni — a clown character in commedia dell\'arte theatre. Entered British English in the 16th century.', ex:'"His zany television persona was carefully designed to disarm people."',src:'savile'},
+{w:'Zealous', pos:'adjective', pron:'<b>ZEL</b>-us', meaning:'Having or showing great energy or enthusiasm in pursuit of a cause or objective. A zealous person is passionate to the point of intensity.', origin:'From Greek zelos — zeal, ardour.', ex:'"Inspector Campbell was zealous in his pursuit of the Peaky Blinders — perhaps too zealous for his own good."',src:'bf'},
+// ═══ CUNK ON EARTH ═══
+{w:'Civilisation', pos:'noun', pron:'siv-ih-lih-<b>ZAY</b>-shun  (British: NOT "siv-ih-lih-ZAY-shun" with a Z sound — British say it with a Z but spell it with an S)', meaning:'A complex human society with advanced culture, law, cities, and organised government. Cunk asks what civilisation is in every episode — and somehow makes it funnier each time.', origin:'From Latin civilis — relating to citizens. The British spelling uses -isation (American: -ization).', ex:'"Civilisation — what is it? Nobody\'s really sure, but Stonehenge is probably involved." — Philomena Cunk',src:'ce'},
+{w:'Epoch', pos:'noun', pron:'<b>EE</b>-pok  (British say "EE-pok", Americans say "EP-uk")', meaning:'A particular period of time in history, especially one marked by notable events or a distinct character. "A new epoch" = a new era of human history.', origin:'From Greek epokhē — a pause, a fixed point in time.', ex:'"The Renaissance was a very important epoch in human history — or a really long time ago, as Cunk puts it."',src:'ce'},
+{w:'Renaissance', pos:'noun', pron:'rih-<b>NAY</b>-sunss  (British: stress on second syllable — NOT "REN-uh-sonss")', meaning:'The great revival of art, literature, and learning in Europe in the 14th–17th centuries; also any period of renewed activity or achievement. From French meaning "rebirth."', origin:'From French renaissance — rebirth, from re (again) + naissance (birth).', ex:'"The Renaissance was when everyone started painting naked people and calling it art." — Philomena Cunk',src:'ce'},
+{w:'Hegemony', pos:'noun', pron:'hih-<b>JEM</b>-uh-nee', meaning:'Leadership or dominance by one country or group over others; the political, economic, or cultural domination of one entity over others.', origin:'From Greek hēgemonia — leadership, from hēgemon (leader).', ex:'"Rome achieved hegemony over the entire known world — which must have been quite annoying for everyone else."',src:'ce'},
+{w:'Chronology', pos:'noun', pron:'kruh-<b>NOL</b>-uh-jee', meaning:'The arrangement of events or dates in the order of their occurrence; a sequence of events in time. "Chronological order" = time order from earliest to latest.', origin:'From Greek khronos (time) + logos (word/study).', ex:'"To understand history you must understand chronology — which is basically just the order things happened in."',src:'ce'},
+{w:'Omnipotent', pos:'adjective', pron:'om-<b>NIP</b>-uh-tent', meaning:'Having unlimited or very great power; all-powerful. Used to describe God, rulers, or anyone with seemingly absolute authority.', origin:'From Latin omni (all) + potens (powerful).', ex:'"God was described as omnipotent, which means he could do anything — apart from apparently stop the Black Death."',src:'ce'},
+{w:'Empirical', pos:'adjective', pron:'em-<b>PIR</b>-ih-kul', meaning:'Based on observation or experience rather than theory or pure logic; verifiable through experiment or direct observation.', origin:'From Greek empeirikos — experienced, from empeiria (experience).', ex:'"Science works on empirical evidence — which means you actually have to check if something is true rather than just assuming."',src:'ce'},
+{w:'Zeitgeist', pos:'noun', pron:'<b>TSYT</b>-gyst  (German origin — "TZ" sound at start, not "ZYT")', meaning:'The defining spirit or mood of a particular period of history as shown by the ideas and beliefs of the time. Literally German for "time-spirit."', origin:'From German Zeit (time) + Geist (spirit). Borrowed directly into English.', ex:'"The 1960s had a particular zeitgeist — everyone suddenly wanted to question everything."',src:'ce'},
+{w:'Hubris', pos:'noun', pron:'<b>HYOO</b>-bris', meaning:'Excessive pride or self-confidence that leads to downfall; the dangerous arrogance of believing yourself above consequences. In Greek tragedy, hubris always leads to nemesis (punishment).', origin:'From Greek hubris — excessive pride or presumption toward the gods.', ex:'"Caesar\'s hubris — believing himself untouchable — led directly to the ides of March."',src:'ce'},
+{w:'Anachronism', pos:'noun', pron:'uh-<b>NAK</b>-ruh-niz-um', meaning:'A thing belonging or appropriate to a period other than that in which it exists — something out of its proper time. "An anachronism" = something that doesn\'t fit its historical period.', origin:'From Greek ana (against) + khronos (time). Things that are wrong for their time period.', ex:'"Showing a Viking with a smartphone would be an anachronism." — the kind of concept Cunk misunderstands brilliantly.',src:'ce'},
+{w:'Cataclysm', pos:'noun', pron:'<b>KAT</b>-uh-kliz-um', meaning:'A large-scale and violent event in the natural world; a sudden violent upheaval or disaster that changes everything.', origin:'From Greek kataklysmos — a deluge or flood, from kata (down) + klyzein (to wash).', ex:'"The fall of Rome was a cataclysm that ended civilisation — or at least the Roman version of it."',src:'ce'},
+{w:'Protagonist', pos:'noun', pron:'proh-<b>TAG</b>-uh-nist', meaning:'The main character in a story, play, or film; also the leading figure in a real-world event or situation. NOT the same as "hero" — a protagonist can be good or evil.', origin:'From Greek protagonistes — first actor, from protos (first) + agonistes (actor).', ex:'"Jesus was the protagonist of the New Testament — though he didn\'t get a very happy ending." — Cunk on Earth',src:'ce'},
+{w:'Rhetoric', pos:'noun', pron:'<b>RET</b>-uh-rik', meaning:'The art of effective or persuasive speaking or writing; language designed to have a persuasive effect on its audience. "Rhetorical question" = a question asked for effect, not because you want an answer.', origin:'From Greek rhētorikē — the art of the orator.', ex:'"Politicians are trained in rhetoric — which is the art of saying things convincingly without necessarily meaning them."',src:'ce'},
+{w:'Ecclesiastical', pos:'adjective', pron:'ih-klee-zee-<b>AS</b>-tih-kul', meaning:'Relating to the Christian Church or its clergy; of or concerning church organisation, doctrine, or affairs.', origin:'From Greek ekklēsiastikos — relating to an assembly or church.', ex:'"The Pope held enormous ecclesiastical authority — and quite a lot of political power too."',src:'ce'},
+{w:'Bourgeoisie', pos:'noun', pron:'boor-zhwah-<b>ZEE</b>', meaning:'The middle class — people in between the aristocracy and the working class; those who own property or businesses. In Marxist theory, the class that owns the means of production.', origin:'From French bourgeois — a citizen of a town (bourg). The concept became central to 19th-century political thought.', ex:'"Marx said the bourgeoisie controlled everything — which presumably included the nice houses and the good curtains."',src:'ce'},
+{w:'Dichotomy', pos:'noun', pron:'dy-<b>KOT</b>-uh-mee', meaning:'A division or contrast between two things that are presented as being opposed or entirely different; a binary split with no middle ground.', origin:'From Greek dichotomia — a cutting in two, from dikha (in two) + temnein (to cut).', ex:'"There\'s a dichotomy between war and peace — you\'re either doing one or the other, mostly."',src:'ce'},
+{w:'Manifesto', pos:'noun', pron:'man-ih-<b>FES</b>-toh', meaning:'A public declaration of policy and aims, especially one issued before an election by a political party or before a revolution by a group seeking power.', origin:'From Italian manifesto — clear proof, from Latin manifestus (obvious).', ex:'"The Communist Manifesto told workers they had nothing to lose but their chains — which sounded quite freeing."',src:'ce'},
+{w:'Paradox', pos:'noun', pron:'<b>PA</b>-ruh-doks', meaning:'A statement that seems contradictory or absurd but may actually be true; a person or thing that combines contradictory features or qualities.', origin:'From Greek paradoxon — contrary to expectation, from para (contrary to) + doxa (opinion).', ex:'"The paradox of democracy is that people can vote for someone who then takes away their right to vote."',src:'ce'},
+{w:'Heresy', pos:'noun', pron:'<b>HER</b>-uh-see', meaning:'Belief or opinion contrary to orthodox religious doctrine; any opinion profoundly at odds with what is generally accepted. In the Middle Ages, heresy could get you burned at the stake.', origin:'From Greek hairesis — choice, sect, school of thought.', ex:'"Galileo saying the Earth went round the Sun was considered heresy — the Church found this deeply inconvenient."',src:'ce'},
+{w:'Unprecedented', pos:'adjective', pron:'un-<b>PRES</b>-ih-den-tid', meaning:'Never done or known before; having no prior example. Politicians and journalists overuse this word, but it properly means something truly never seen before.', origin:'From un (not) + precedented — having a precedent (prior example).', ex:'"The Black Death was unprecedented — nothing like it had killed so many people so quickly in recorded history."',src:'ce'},
+{w:'Enlightenment', pos:'noun', pron:'en-<b>LY</b>-tun-ment', meaning:'The 18th-century philosophical movement that emphasised reason, science, and individual rights over tradition and religious authority. Also the general state of having understanding or insight.', origin:'From enlighten — to give knowledge or understanding. The historical movement coined its own name.', ex:'"The Enlightenment was when humans decided to use their brains properly — which took surprisingly long to catch on."',src:'ce'},
+{w:'Feudal', pos:'adjective', pron:'<b>FYOO</b>-dul', meaning:'Relating to the feudal system — the medieval social hierarchy where lords owned land and peasants worked it in exchange for protection. "Feudal" describes anything with a rigid, exploitative social hierarchy.', origin:'From Medieval Latin feudalis — relating to a fief (land granted by a lord).', ex:'"The feudal system meant most people worked very hard all their lives for someone else\'s benefit — a concept that has never really gone away."',src:'ce'},
+{w:'Deity', pos:'noun', pron:'<b>DEE</b>-ih-tee', meaning:'A god or goddess; a divine being worshipped by people. "The deity" = God. "A deity" = one of many gods in a polytheistic religion.', origin:'From Latin deitas — divine nature, from deus (god).', ex:'"The ancient Greeks had a deity for everything — there was even a god of doorways, which seems like a very specific job."',src:'ce'},
+{w:'Atrocity', pos:'noun', pron:'uh-<b>TROS</b>-ih-tee', meaning:'An extremely wicked or cruel act, typically one involving physical violence or injury; a horrifying act, especially in the context of war.', origin:'From Latin atrox — savage, cruel.', ex:'"History is full of atrocities that people would rather forget but probably shouldn\'t."',src:'ce'},
+{w:'Legacy', pos:'noun', pron:'<b>LEG</b>-uh-see', meaning:'Something left or handed down by a predecessor; the long-lasting impact of a person, event, or era on the future. "What is your legacy?" = what will you leave behind?', origin:'From Medieval Latin legatia — a bequest. Now used broadly for any lasting impact.', ex:'"The Roman Empire\'s legacy is everywhere — roads, laws, the concept of central heating."',src:'ce'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let activeFilter = 'all';
+let searchTerm = '';
+
+// ══════════════════════════════════════════════════════════════
+// AUDIO ENGINE — Uses Google TTS (most reliable, works everywhere)
+// Falls back to Web Speech API if fetch is blocked
+// ══════════════════════════════════════════════════════════════
+let currentAudio = null;
+
+function resetAllButtons() {
+  document.querySelectorAll('.speak-btn').forEach(b => {
+    b.classList.remove('playing');
+    b.innerHTML = '▶ Hear it';
+  });
+}
+
+function speak(word, btnId) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+
+  // Toggle off if already playing
+  if (btn.classList.contains('playing')) {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    resetAllButtons();
+    return;
+  }
+
+  // Stop any current audio
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  resetAllButtons();
+
+  btn.innerHTML = '⏳…';
+  btn.classList.add('playing');
+
+  // Clean word for TTS (remove parentheses and special chars)
+  const clean = word.replace(/\s*\(.*?\)\s*/g, '').replace(/['"\/\\]/g, '').trim();
+
+  // ── METHOD 1: Google Translate TTS (works in most browsers) ──
+  const gttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(clean)}&tl=en-GB&client=tw-ob&ttsspeed=0.8`;
+
+  const audio = new Audio();
+  audio.crossOrigin = 'anonymous';
+
+  audio.oncanplaythrough = () => {
+    currentAudio = audio;
+    audio.play().then(() => {
+      btn.innerHTML = '🔊 Playing';
+    }).catch(() => {
+      // Play failed — try Web Speech API
+      currentAudio = null;
+      speakWithWebSpeech(clean, btn);
+    });
+  };
+
+  audio.onended = () => {
+    currentAudio = null;
+    resetAllButtons();
+  };
+
+  audio.onerror = () => {
+    // Google TTS failed — fall back to Web Speech API
+    currentAudio = null;
+    speakWithWebSpeech(clean, btn);
+  };
+
+  // Set src AFTER attaching events
+  audio.src = gttsUrl;
+  audio.load();
+
+  // Timeout: if not playing after 3s, use Web Speech
+  setTimeout(() => {
+    if (btn.innerHTML === '⏳…') {
+      audio.src = '';
+      speakWithWebSpeech(clean, btn);
+    }
+  }, 3000);
+}
+
+// ── METHOD 2: Web Speech API fallback ──
+function speakWithWebSpeech(word, btn) {
+  if (!('speechSynthesis' in window)) {
+    btn.innerHTML = '✗ No audio';
+    btn.classList.remove('playing');
+    setTimeout(() => { btn.innerHTML = '▶ Hear it'; }, 2000);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  function doUtter(voices) {
+    const utt = new SpeechSynthesisUtterance(word);
+    utt.lang = 'en-GB';
+    utt.rate = 0.82;
+    utt.pitch = 1.0;
+    utt.volume = 1.0;
+
+    // Pick best British voice
+    const voice =
+      voices.find(v => v.lang === 'en-GB' && /daniel|kate|serena|oliver|amy|emma|brian|libby|rishi/i.test(v.name)) ||
+      voices.find(v => v.lang === 'en-GB') ||
+      voices.find(v => /british|uk/i.test(v.name)) ||
+      voices.find(v => v.lang.startsWith('en')) ||
+      null;
+
+    if (voice) utt.voice = voice;
+
+    utt.onstart  = () => { if(btn) btn.innerHTML = '🔊 Playing'; };
+    utt.onend    = () => { resetAllButtons(); };
+    utt.onerror  = () => { resetAllButtons(); };
+
+    window.speechSynthesis.speak(utt);
+
+    // Watchdog: Chrome sometimes fires onerror silently on mobile
+    setTimeout(() => {
+      if (btn && btn.innerHTML === '⏳…') resetAllButtons();
+    }, 5000);
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    doUtter(voices);
+  } else {
+    // Wait for voices to load (needed on Chrome Android)
+    let tries = 0;
+    const poll = setInterval(() => {
+      const v = window.speechSynthesis.getVoices();
+      tries++;
+      if (v.length > 0 || tries > 20) {
+        clearInterval(poll);
+        doUtter(v);
+      }
+    }, 150);
+  }
+}
+
+// ── FILTER & SEARCH ───────────────────────────────────────────
+function setFilter(src, btn) {
+  activeFilter = src;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+function filterAll() {
+  searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  render();
+}
+
+function getFiltered() {
+  return VOCAB.filter(v => {
+    const matchSrc = activeFilter === 'all' || v.src === activeFilter;
+    const q = searchTerm;
+    const matchQ = !q || v.w.toLowerCase().includes(q) || v.meaning.toLowerCase().includes(q) || v.pos.toLowerCase().includes(q);
+    return matchSrc && matchQ;
+  });
+}
+
+// ── SRC DISPLAY ───────────────────────────────────────────────
+function srcLabel(src) {
+  const m = {
+    savile: '🎬 Jimmy Savile',
+    crown:  '👑 The Crown',
+    wll:    '💌 Wicked Little Letters',
+    pb:     '🎩 Peaky Blinders',
+    ce:     '📺 Cunk on Earth',
+    bf:     '🎓 British Formal',
+    bc:     '🗣️ British Casual / Slang'
+  };
+  return m[src] || src;
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  const filtered = getFiltered();
+  document.getElementById('countPill').textContent = filtered.length + ' / ' + VOCAB.length + ' words';
+
+  // Group by first letter
+  const byLetter = {};
+  filtered.forEach(v => {
+    const l = v.w[0].toUpperCase();
+    if (!byLetter[l]) byLetter[l] = [];
+    byLetter[l].push(v);
+  });
+
+  const letters = Object.keys(byLetter).sort();
+
+  // Alpha bar
+  const allLetters = [...new Set(VOCAB.map(v=>v.w[0].toUpperCase()))].sort();
+  document.getElementById('alphaBar').innerHTML =
+    allLetters.map(l => `<a href="#L${l}">${l}</a>`).join('');
+
+  // Main content
+  let html = '';
+  letters.forEach(l => {
+    html += `<div id="L${l}" class="letter-heading">${l} <small>${byLetter[l].length} word${byLetter[l].length!==1?'s':''}</small></div>`;
+    byLetter[l].forEach((v, i) => {
+      const id = 'btn_' + v.w.replace(/[^a-z0-9]/gi,'_') + i;
+      const speakWord = v.w.replace(/\(.*?\)/g,'').replace(/[^a-zA-Z\s\-']/g,'').trim();
+      html += `
+<div class="card ${v.src}" data-src="${v.src}">
+  <div class="card-top">
+    <div class="word-block">
+      <span class="word">${v.w}</span><span class="pos">${v.pos}</span>
+    </div>
+    <button class="speak-btn" id="${id}" onclick="speak('${speakWord.replace(/'/g,"\\'")}','${id}')">▶ Hear it</button>
+  </div>
+  <div class="pron-row">
+    <span class="pron-label">🔊 Say it</span>
+    <span class="pron-text">${v.pron}</span>
+  </div>
+  <div class="row"><span class="label lm">Meaning</span><span class="row-text">${v.meaning}</span></div>
+  <div class="row"><span class="label lo">Origin</span><span class="row-text">${v.origin}</span></div>
+  <div class="row"><span class="label le">Example</span><span class="row-text it">${v.ex}</span></div>
+  <div class="src">${srcLabel(v.src)}</div>
+</div>`;
+    });
+  });
+
+  if (!html) html = '<div style="text-align:center;padding:40px;color:#888;font-style:italic;font-size:1.1em;">No entries found.</div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
